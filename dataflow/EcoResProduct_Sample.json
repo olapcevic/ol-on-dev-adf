@@ -1,0 +1,107 @@
+{
+	"name": "EcoResProduct_Sample",
+	"properties": {
+		"folder": {
+			"name": "OL/Sample Data"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "D365FOSynapseDelta",
+						"type": "LinkedServiceReference"
+					},
+					"name": "EcoResProduct"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "storageaccount",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Id as string,",
+				"          SinkCreatedOn as timestamp,",
+				"          SinkModifiedOn as timestamp,",
+				"          pdscwproduct as long,",
+				"          producttype as long,",
+				"          servicetype as long,",
+				"          sunplmsyncwithplm as long,",
+				"          sysdatastatecode as long,",
+				"          displayproductnumber as string,",
+				"          instancerelationtype as long,",
+				"          searchname as string,",
+				"          engchgproductownerid as string,",
+				"          engchgproductcategorydetails as long,",
+				"          engchgproductreleasepolicy as long,",
+				"          engchgproductreadinesspolicy as long,",
+				"          modifieddatetime as timestamp,",
+				"          modifiedby as string,",
+				"          modifiedtransactionid as long,",
+				"          createddatetime as timestamp,",
+				"          createdby as string,",
+				"          createdtransactionid as long,",
+				"          dataareaid as string,",
+				"          recversion as long,",
+				"          partition as long,",
+				"          sysrowversion as long,",
+				"          recid as long,",
+				"          tableid as long,",
+				"          versionnumber as long,",
+				"          createdon as timestamp,",
+				"          modifiedon as timestamp,",
+				"          IsDelete as boolean,",
+				"          createdonpartition as string,",
+				"          PartitionId as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'delta',",
+				"     fileSystem: 'dataverse-ontest-unqccd0037834be4cec846b41a3ea290',",
+				"     folderPath: 'deltalake/ecoresproduct_partitioned') ~> EcoResProduct",
+				"EcoResProduct filter(displayproductnumber == \"3ME10140264\" || \r",
+				"displayproductnumber == \"3WF10061508\" || \r",
+				"displayproductnumber == \"2UF10080069\" ||\r",
+				"displayproductnumber == \"3WF10053037\" || \r",
+				"displayproductnumber == \"2UE30660553\" || \r",
+				"displayproductnumber == \"3WD30120958\") ~> filter1",
+				"filter1 select(mapColumn(",
+				"          displayproductnumber,",
+				"          searchname,",
+				"          recid,",
+				"          partition",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delimited',",
+				"     container: 'whsstockreplenish',",
+				"     folderPath: 'OL',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: true,",
+				"     partitionFileNames:['EcoResProduct_Sample.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}

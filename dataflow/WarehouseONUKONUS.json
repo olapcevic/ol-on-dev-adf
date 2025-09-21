@@ -1,0 +1,135 @@
+{
+	"name": "WarehouseONUKONUS",
+	"properties": {
+		"folder": {
+			"name": "OL/Sample Data"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "UOWarehouses",
+						"type": "DatasetReference"
+					},
+					"name": "WHONUKONUS"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "storageaccount",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          crd3c_automatictocreation as boolean,",
+				"          crd3c_automatictocreationname as string,",
+				"          crd3c_dataarea as string,",
+				"          crd3c_datastatus as integer,",
+				"          crd3c_datastatusname as string,",
+				"          crd3c_deliveryterms as string,",
+				"          crd3c_modeofdelivery as string,",
+				"          crd3c_name as string,",
+				"          crd3c_refreshday as string,",
+				"          crd3c_refreshdayname as string,",
+				"          crd3c_refreshfrequency as integer,",
+				"          crd3c_refreshtime as timestamp,",
+				"          crd3c_site as string,",
+				"          crd3c_sourcewhname as string,",
+				"          crd3c_uowarehousesid as string,",
+				"          crd3c_warehousename as string,",
+				"          crd3c_warehousetype as string,",
+				"          createdbyname as string,",
+				"          createdbyyominame as string,",
+				"          createdon as timestamp,",
+				"          createdonbehalfbyname as string,",
+				"          createdonbehalfbyyominame as string,",
+				"          hso_automaticpocreation as boolean,",
+				"          hso_automaticpocreationname as string,",
+				"          hso_autoreservation as boolean,",
+				"          hso_autoreservationname as string,",
+				"          hso_companyicwarehouse as string,",
+				"          hso_companylocalwarehouse as string,",
+				"          hso_dualpurpose as boolean,",
+				"          hso_dualpurposename as string,",
+				"          hso_icwarehousename as string,",
+				"          hso_maxtoqty as integer,",
+				"          hso_ordertypesplit as integer,",
+				"          hso_ordertypesplitname as string,",
+				"          hso_sourceicwarehouse as string,",
+				"          hso_storeleadername as string,",
+				"          hso_storeleaderyominame as string,",
+				"          hso_vendorname as string,",
+				"          importsequencenumber as integer,",
+				"          modifiedbyname as string,",
+				"          modifiedbyyominame as string,",
+				"          modifiedon as timestamp,",
+				"          modifiedonbehalfbyname as string,",
+				"          modifiedonbehalfbyyominame as string,",
+				"          overriddencreatedon as timestamp,",
+				"          owneridname as string,",
+				"          owneridtype as string,",
+				"          owneridyominame as string,",
+				"          owningbusinessunitname as string,",
+				"          statecode as integer,",
+				"          statecodename as string,",
+				"          statuscode as integer,",
+				"          statuscodename as string,",
+				"          timezoneruleversionnumber as integer,",
+				"          utcconversiontimezonecode as integer,",
+				"          versionnumber as long,",
+				"          createdonbehalfby as string,",
+				"          hso_vendor as string,",
+				"          hso_icwarehouse as string,",
+				"          owninguser as string,",
+				"          modifiedby as string,",
+				"          hso_storeleader as string,",
+				"          modifiedonbehalfby as string,",
+				"          ownerid as string,",
+				"          {@odata.etag} as string,",
+				"          crd3c_sourcewh as string,",
+				"          createdby as string,",
+				"          owningbusinessunit as string,",
+				"          owningteam as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false) ~> WHONUKONUS",
+				"WHONUKONUS filter(crd3c_dataarea == 'onuk' || crd3c_dataarea == 'onus') ~> filter1",
+				"filter1 select(mapColumn(",
+				"          crd3c_dataarea,",
+				"          crd3c_name,",
+				"          hso_vendor,",
+				"          crd3c_sourcewhname,",
+				"          hso_dualpurpose",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delimited',",
+				"     container: 'whsstockreplenish',",
+				"     folderPath: 'OL/',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: true,",
+				"     partitionFileNames:['WHONUSONUK.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}

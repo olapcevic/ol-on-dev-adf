@@ -1,0 +1,45 @@
+{
+	"name": "WHONUKONUS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "storageaccount",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "OL/Sample Data"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "WHONUSONUK.csv",
+				"folderPath": "OL",
+				"container": "whsstockreplenish"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "crd3c_dataarea",
+				"type": "String"
+			},
+			{
+				"name": "crd3c_name",
+				"type": "String"
+			},
+			{
+				"name": "hso_vendor",
+				"type": "String"
+			},
+			{
+				"name": "crd3c_sourcewhname",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

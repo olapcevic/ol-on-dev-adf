@@ -1,0 +1,119 @@
+{
+	"name": "Sync Vendors",
+	"properties": {
+		"activities": [
+			{
+				"name": "Delete Vendors",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DeleteVendors",
+						"type": "DataFlowReference",
+						"parameters": {
+							"Container": {
+								"value": "'@{pipeline().globalParameters.FO_Synapse_Container}'",
+								"type": "Expression"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Sync Vendors",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "Delete Vendors",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "SyncVendors",
+						"type": "DataFlowReference",
+						"parameters": {
+							"Container": {
+								"value": "'@{pipeline().globalParameters.FO_Synapse_Container}'",
+								"type": "Expression"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Sync Vendors_SourcingWH",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "Sync Vendors",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "SyncVendors_SourcingWH",
+						"type": "DataFlowReference",
+						"parameters": {
+							"Container": {
+								"value": "'@{pipeline().globalParameters.FO_Synapse_Container}'",
+								"type": "Expression"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"variables": {
+			"Error": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2025-09-12T11:42:11Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

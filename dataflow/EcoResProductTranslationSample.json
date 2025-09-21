@@ -1,0 +1,99 @@
+{
+	"name": "EcoResProductTranslationSample",
+	"properties": {
+		"folder": {
+			"name": "OL/Sample Data"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "D365FOSynapseDelta",
+						"type": "LinkedServiceReference"
+					},
+					"name": "EcoResProductTranslationSample"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "storageaccount",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Id as string,",
+				"          SinkCreatedOn as timestamp,",
+				"          SinkModifiedOn as timestamp,",
+				"          sysdatastatecode as long,",
+				"          description as string,",
+				"          languageid as string,",
+				"          name as string,",
+				"          product as long,",
+				"          modifieddatetime as timestamp,",
+				"          modifiedby as string,",
+				"          modifiedtransactionid as long,",
+				"          createddatetime as timestamp,",
+				"          createdby as string,",
+				"          createdtransactionid as long,",
+				"          dataareaid as string,",
+				"          recversion as long,",
+				"          partition as long,",
+				"          sysrowversion as long,",
+				"          recid as long,",
+				"          tableid as long,",
+				"          versionnumber as long,",
+				"          createdon as timestamp,",
+				"          modifiedon as timestamp,",
+				"          IsDelete as boolean,",
+				"          createdonpartition as string,",
+				"          PartitionId as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'delta',",
+				"     fileSystem: 'dataverse-ontest-unqccd0037834be4cec846b41a3ea290',",
+				"     folderPath: 'deltalake/ecoresproducttranslation_partitioned') ~> EcoResProductTranslationSample",
+				"EcoResProductTranslationSample filter(toString(product) == \"5637329349\" ||\r",
+				"toString(product) == \"5637299854\" ||\r",
+				"toString(product) == \"5637323867\" ||\r",
+				"toString(product) == \"5637267029\" ||\r",
+				"toString(product) == \"5637453590\" ||\r",
+				"toString(product) == \"5637338094\") ~> filter1",
+				"filter1 select(mapColumn(",
+				"          description,",
+				"          product,",
+				"          partition",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delimited',",
+				"     container: 'whsstockreplenish',",
+				"     folderPath: 'OL',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: true,",
+				"     partitionFileNames:['EcoResProductTranslationSample.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}

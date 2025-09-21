@@ -1,0 +1,51 @@
+{
+	"name": "POCreate_test",
+	"properties": {
+		"activities": [
+			{
+				"name": "POCreate_test",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "CreatePurchaseOrderLines_v1_0_0",
+						"type": "DataFlowReference",
+						"parameters": {
+							"Company": "'ONUK'",
+							"Store": "'SOU-PF-STK'",
+							"Warehouse": "'LUX-KN-STK'",
+							"filename": "'SampleFileWithFTS'",
+							"TriggerSource": "'Manual'",
+							"Container": {
+								"value": "'@{pipeline().globalParameters.FO_Synapse_Container}'",
+								"type": "Expression"
+							},
+							"OrderType": "'Purchase Order'",
+							"isDualPurposeStore": "true()",
+							"isItemGroupingEnabled": "true()"
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "OL"
+		},
+		"annotations": [],
+		"lastPublishTime": "2025-09-17T12:13:39Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

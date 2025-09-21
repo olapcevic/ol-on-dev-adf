@@ -1,0 +1,948 @@
+{
+	"name": "OL_13082025_0914",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "storageaccount",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "OL/General"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "OL-13082025-0914.csv",
+				"container": "whsstockreplenish"
+			},
+			"columnDelimiter": ";",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Id",
+				"type": "String"
+			},
+			{
+				"name": "SinkCreatedOn",
+				"type": "String"
+			},
+			{
+				"name": "SinkModifiedOn",
+				"type": "String"
+			},
+			{
+				"name": "bidonly",
+				"type": "String"
+			},
+			{
+				"name": "blocked",
+				"type": "String"
+			},
+			{
+				"name": "cashaccountingregime_es",
+				"type": "String"
+			},
+			{
+				"name": "changerequestallowoverride",
+				"type": "String"
+			},
+			{
+				"name": "changerequestenabled",
+				"type": "String"
+			},
+			{
+				"name": "changerequestoverride",
+				"type": "String"
+			},
+			{
+				"name": "cisstatus",
+				"type": "String"
+			},
+			{
+				"name": "companytype_mx",
+				"type": "String"
+			},
+			{
+				"name": "disabledowned",
+				"type": "String"
+			},
+			{
+				"name": "fatcafilingrequirement",
+				"type": "String"
+			},
+			{
+				"name": "femaleowned",
+				"type": "String"
+			},
+			{
+				"name": "foreignentityindicator",
+				"type": "String"
+			},
+			{
+				"name": "foreignresident_ru",
+				"type": "String"
+			},
+			{
+				"name": "heir_it",
+				"type": "String"
+			},
+			{
+				"name": "hubzone",
+				"type": "String"
+			},
+			{
+				"name": "icmscontributor_br",
+				"type": "String"
+			},
+			{
+				"name": "incltax",
+				"type": "String"
+			},
+			{
+				"name": "inventprofiletype_ru",
+				"type": "String"
+			},
+			{
+				"name": "ispaymfeecovered_jp",
+				"type": "String"
+			},
+			{
+				"name": "isresident_lv",
+				"type": "String"
+			},
+			{
+				"name": "locallyowned",
+				"type": "String"
+			},
+			{
+				"name": "mandatoryvatdate_pl",
+				"type": "String"
+			},
+			{
+				"name": "matchingpolicy",
+				"type": "String"
+			},
+			{
+				"name": "minorityowned",
+				"type": "String"
+			},
+			{
+				"name": "nontaxable_br",
+				"type": "String"
+			},
+			{
+				"name": "offsetaccounttype",
+				"type": "String"
+			},
+			{
+				"name": "onetimevendor",
+				"type": "String"
+			},
+			{
+				"name": "operationtype_mx",
+				"type": "String"
+			},
+			{
+				"name": "presencetype_br",
+				"type": "String"
+			},
+			{
+				"name": "purchamountpurchaseorder",
+				"type": "String"
+			},
+			{
+				"name": "secondtin",
+				"type": "String"
+			},
+			{
+				"name": "servicecodeondlvaddress_br",
+				"type": "String"
+			},
+			{
+				"name": "smallbusiness",
+				"type": "String"
+			},
+			{
+				"name": "tax1099namechoice",
+				"type": "String"
+			},
+			{
+				"name": "tax1099reports",
+				"type": "String"
+			},
+			{
+				"name": "taxidtype",
+				"type": "String"
+			},
+			{
+				"name": "taxwithholdcalculate",
+				"type": "String"
+			},
+			{
+				"name": "taxwithholdvendortype_th",
+				"type": "String"
+			},
+			{
+				"name": "unitedvatinvoice_lt",
+				"type": "String"
+			},
+			{
+				"name": "usecashdisc",
+				"type": "String"
+			},
+			{
+				"name": "vatpartnerkind_ru",
+				"type": "String"
+			},
+			{
+				"name": "vattaxagent_ru",
+				"type": "String"
+			},
+			{
+				"name": "vendconsumption_br",
+				"type": "String"
+			},
+			{
+				"name": "vendortype_mx",
+				"type": "String"
+			},
+			{
+				"name": "veteranowned",
+				"type": "String"
+			},
+			{
+				"name": "w9",
+				"type": "String"
+			},
+			{
+				"name": "w9included",
+				"type": "String"
+			},
+			{
+				"name": "vendvendorcollaborationtype",
+				"type": "String"
+			},
+			{
+				"name": "withholdingtaxpayertype_mx",
+				"type": "String"
+			},
+			{
+				"name": "originalvendorinreporting_it",
+				"type": "String"
+			},
+			{
+				"name": "isselfinvoicevendor_it",
+				"type": "String"
+			},
+			{
+				"name": "workflowstate",
+				"type": "String"
+			},
+			{
+				"name": "iscprb_br",
+				"type": "String"
+			},
+			{
+				"name": "cxmlorderenable",
+				"type": "String"
+			},
+			{
+				"name": "vatnumtabletype",
+				"type": "String"
+			},
+			{
+				"name": "overridesalestax",
+				"type": "String"
+			},
+			{
+				"name": "accruesalestaxtype",
+				"type": "String"
+			},
+			{
+				"name": "taxvendorchargetaxtolerancevalidation",
+				"type": "String"
+			},
+			{
+				"name": "revenuetypology_it",
+				"type": "String"
+			},
+			{
+				"name": "ispublicsector_it",
+				"type": "String"
+			},
+			{
+				"name": "istaxationoverpayroll_br",
+				"type": "String"
+			},
+			{
+				"name": "einvoiceregister_it",
+				"type": "String"
+			},
+			{
+				"name": "isunidentifiedbenef_br",
+				"type": "String"
+			},
+			{
+				"name": "itmimportcostingvendor",
+				"type": "String"
+			},
+			{
+				"name": "itmservicesprovider",
+				"type": "String"
+			},
+			{
+				"name": "itmvendtype",
+				"type": "String"
+			},
+			{
+				"name": "exf_porequired",
+				"type": "String"
+			},
+			{
+				"name": "exf_classified",
+				"type": "String"
+			},
+			{
+				"name": "exf_vendorportalinvoicesmustbeapproved",
+				"type": "String"
+			},
+			{
+				"name": "exf_istmsfreight",
+				"type": "String"
+			},
+			{
+				"name": "sunplmsyncwithplm",
+				"type": "String"
+			},
+			{
+				"name": "hsooscaenabled",
+				"type": "String"
+			},
+			{
+				"name": "hsogitincludevendorinquery",
+				"type": "String"
+			},
+			{
+				"name": "oninterface",
+				"type": "String"
+			},
+			{
+				"name": "onsourcingdeliverytype",
+				"type": "String"
+			},
+			{
+				"name": "onsourcingupdatechain",
+				"type": "String"
+			},
+			{
+				"name": "onpoplacementenabled",
+				"type": "String"
+			},
+			{
+				"name": "sysdatastatecode",
+				"type": "String"
+			},
+			{
+				"name": "taxwithholdgroup",
+				"type": "String"
+			},
+			{
+				"name": "residenceforeigncountryregionid",
+				"type": "String"
+			},
+			{
+				"name": "paymtermid",
+				"type": "String"
+			},
+			{
+				"name": "linedisc",
+				"type": "String"
+			},
+			{
+				"name": "accountnum",
+				"type": "String"
+			},
+			{
+				"name": "bankaccount",
+				"type": "String"
+			},
+			{
+				"name": "bankcentralbankpurposecode",
+				"type": "String"
+			},
+			{
+				"name": "bankcentralbankpurposetext",
+				"type": "String"
+			},
+			{
+				"name": "bankcentralbanktranstypecur_ru",
+				"type": "String"
+			},
+			{
+				"name": "bankorderofpayment_ru",
+				"type": "String"
+			},
+			{
+				"name": "birthcountycode_it",
+				"type": "String"
+			},
+			{
+				"name": "birthplace",
+				"type": "String"
+			},
+			{
+				"name": "blockedreleasedate",
+				"type": "String"
+			},
+			{
+				"name": "cashdisc",
+				"type": "String"
+			},
+			{
+				"name": "ccmnum_br",
+				"type": "String"
+			},
+			{
+				"name": "ciscompanyregnum",
+				"type": "String"
+			},
+			{
+				"name": "cisnationalinsurancenum",
+				"type": "String"
+			},
+			{
+				"name": "cisuniquetaxpayerref",
+				"type": "String"
+			},
+			{
+				"name": "cisverificationdate",
+				"type": "String"
+			},
+			{
+				"name": "cisverificationnum",
+				"type": "String"
+			},
+			{
+				"name": "clearingperiod",
+				"type": "String"
+			},
+			{
+				"name": "cnae_br",
+				"type": "String"
+			},
+			{
+				"name": "cnpjcpfnum_br",
+				"type": "String"
+			},
+			{
+				"name": "commercialregister",
+				"type": "String"
+			},
+			{
+				"name": "commercialregisterinsetnumber",
+				"type": "String"
+			},
+			{
+				"name": "commercialregistersection",
+				"type": "String"
+			},
+			{
+				"name": "companychainid",
+				"type": "String"
+			},
+			{
+				"name": "companyidsiret",
+				"type": "String"
+			},
+			{
+				"name": "companynafcode",
+				"type": "String"
+			},
+			{
+				"name": "consday_jp",
+				"type": "String"
+			},
+			{
+				"name": "contactpersonid",
+				"type": "String"
+			},
+			{
+				"name": "creditmax",
+				"type": "String"
+			},
+			{
+				"name": "creditrating",
+				"type": "String"
+			},
+			{
+				"name": "curp_mx",
+				"type": "String"
+			},
+			{
+				"name": "currency",
+				"type": "String"
+			},
+			{
+				"name": "dba",
+				"type": "String"
+			},
+			{
+				"name": "defaultdimension",
+				"type": "String"
+			},
+			{
+				"name": "defaultinventstatusid",
+				"type": "String"
+			},
+			{
+				"name": "destinationcodeid",
+				"type": "String"
+			},
+			{
+				"name": "diotcountrycode_mx",
+				"type": "String"
+			},
+			{
+				"name": "dlvmode",
+				"type": "String"
+			},
+			{
+				"name": "dlvterm",
+				"type": "String"
+			},
+			{
+				"name": "enddisc",
+				"type": "String"
+			},
+			{
+				"name": "enterprisenumber",
+				"type": "String"
+			},
+			{
+				"name": "ethnicoriginid",
+				"type": "String"
+			},
+			{
+				"name": "factoringaccount",
+				"type": "String"
+			},
+			{
+				"name": "finecode_br",
+				"type": "String"
+			},
+			{
+				"name": "fiscalcode",
+				"type": "String"
+			},
+			{
+				"name": "foreignerid_br",
+				"type": "String"
+			},
+			{
+				"name": "foreigntaxregistration_mx",
+				"type": "String"
+			},
+			{
+				"name": "freightzone",
+				"type": "String"
+			},
+			{
+				"name": "ienum_br",
+				"type": "String"
+			},
+			{
+				"name": "insscei_br",
+				"type": "String"
+			},
+			{
+				"name": "intbank_lv",
+				"type": "String"
+			},
+			{
+				"name": "interestcode_br",
+				"type": "String"
+			},
+			{
+				"name": "inventlocation",
+				"type": "String"
+			},
+			{
+				"name": "inventprofileid_ru",
+				"type": "String"
+			},
+			{
+				"name": "inventsiteid",
+				"type": "String"
+			},
+			{
+				"name": "invoiceaccount",
+				"type": "String"
+			},
+			{
+				"name": "itembuyergroupid",
+				"type": "String"
+			},
+			{
+				"name": "lineofbusinessid",
+				"type": "String"
+			},
+			{
+				"name": "lvpaymtranscodes",
+				"type": "String"
+			},
+			{
+				"name": "maincontactworker",
+				"type": "String"
+			},
+			{
+				"name": "markupgroup",
+				"type": "String"
+			},
+			{
+				"name": "memo",
+				"type": "String"
+			},
+			{
+				"name": "multilinedisc",
+				"type": "String"
+			},
+			{
+				"name": "namecontrol",
+				"type": "String"
+			},
+			{
+				"name": "nationality_mx",
+				"type": "String"
+			},
+			{
+				"name": "nit_br",
+				"type": "String"
+			},
+			{
+				"name": "numbersequencegroup",
+				"type": "String"
+			},
+			{
+				"name": "offsetledgerdimension",
+				"type": "String"
+			},
+			{
+				"name": "organizationnumber",
+				"type": "String"
+			},
+			{
+				"name": "orgid",
+				"type": "String"
+			},
+			{
+				"name": "party",
+				"type": "String"
+			},
+			{
+				"name": "paymdayid",
+				"type": "String"
+			},
+			{
+				"name": "paymid",
+				"type": "String"
+			},
+			{
+				"name": "paymmode",
+				"type": "String"
+			},
+			{
+				"name": "paymsched",
+				"type": "String"
+			},
+			{
+				"name": "paymspec",
+				"type": "String"
+			},
+			{
+				"name": "pricegroup",
+				"type": "String"
+			},
+			{
+				"name": "purchcalendarid",
+				"type": "String"
+			},
+			{
+				"name": "purchpoolid",
+				"type": "String"
+			},
+			{
+				"name": "rfc_mx",
+				"type": "String"
+			},
+			{
+				"name": "segmentid",
+				"type": "String"
+			},
+			{
+				"name": "separatedivisionid_ru",
+				"type": "String"
+			},
+			{
+				"name": "stateinscription_mx",
+				"type": "String"
+			},
+			{
+				"name": "structdepartment_ru",
+				"type": "String"
+			},
+			{
+				"name": "subsegmentid",
+				"type": "String"
+			},
+			{
+				"name": "suppitemgroupid",
+				"type": "String"
+			},
+			{
+				"name": "tamrebategroupid",
+				"type": "String"
+			},
+			{
+				"name": "tax1099fields",
+				"type": "String"
+			},
+			{
+				"name": "tax1099regnum",
+				"type": "String"
+			},
+			{
+				"name": "taxgroup",
+				"type": "String"
+			},
+			{
+				"name": "taxperiodpaymentcode_pl",
+				"type": "String"
+			},
+			{
+				"name": "vatnum",
+				"type": "String"
+			},
+			{
+				"name": "vatoperationcode_ru",
+				"type": "String"
+			},
+			{
+				"name": "vendexceptiongroup",
+				"type": "String"
+			},
+			{
+				"name": "vendgroup",
+				"type": "String"
+			},
+			{
+				"name": "vendincomecode_br",
+				"type": "String"
+			},
+			{
+				"name": "vendinvoicedeclaration_is",
+				"type": "String"
+			},
+			{
+				"name": "venditemgroupid",
+				"type": "String"
+			},
+			{
+				"name": "vendorportaladministratorrecid",
+				"type": "String"
+			},
+			{
+				"name": "vendpaymfeegroup_jp",
+				"type": "String"
+			},
+			{
+				"name": "vendpricetolerancegroupid",
+				"type": "String"
+			},
+			{
+				"name": "youraccountnum",
+				"type": "String"
+			},
+			{
+				"name": "legalrepresentativecurp_mx",
+				"type": "String"
+			},
+			{
+				"name": "legalrepresentativename_mx",
+				"type": "String"
+			},
+			{
+				"name": "legalrepresentativerfc_mx",
+				"type": "String"
+			},
+			{
+				"name": "withholdingtypecode_mx",
+				"type": "String"
+			},
+			{
+				"name": "birthdate",
+				"type": "String"
+			},
+			{
+				"name": "regnum_w",
+				"type": "String"
+			},
+			{
+				"name": "enterprisecode",
+				"type": "String"
+			},
+			{
+				"name": "vatnumrecid",
+				"type": "String"
+			},
+			{
+				"name": "purchaseshipcalendarid",
+				"type": "String"
+			},
+			{
+				"name": "taxvendorchargetaxtoleranceamount",
+				"type": "String"
+			},
+			{
+				"name": "taxvendorchargetaxtolerancepercent",
+				"type": "String"
+			},
+			{
+				"name": "freenotesgroup_it",
+				"type": "String"
+			},
+			{
+				"name": "coderevenuetypology_it",
+				"type": "String"
+			},
+			{
+				"name": "itmfromport",
+				"type": "String"
+			},
+			{
+				"name": "itmoverundertolerancegroupid",
+				"type": "String"
+			},
+			{
+				"name": "itmagent",
+				"type": "String"
+			},
+			{
+				"name": "itmvendaccount",
+				"type": "String"
+			},
+			{
+				"name": "itmcosttypegroupid",
+				"type": "String"
+			},
+			{
+				"name": "exf_systemapprovalgroupid",
+				"type": "String"
+			},
+			{
+				"name": "exf_invoicetype",
+				"type": "String"
+			},
+			{
+				"name": "gupdiscountvendorclaimgroupname",
+				"type": "String"
+			},
+			{
+				"name": "hsolocalname",
+				"type": "String"
+			},
+			{
+				"name": "onsourcingvendaccount",
+				"type": "String"
+			},
+			{
+				"name": "onsource",
+				"type": "String"
+			},
+			{
+				"name": "onexternalid",
+				"type": "String"
+			},
+			{
+				"name": "vrmglobalvendor",
+				"type": "String"
+			},
+			{
+				"name": "modifieddatetime",
+				"type": "String"
+			},
+			{
+				"name": "modifiedby",
+				"type": "String"
+			},
+			{
+				"name": "modifiedtransactionid",
+				"type": "String"
+			},
+			{
+				"name": "createddatetime",
+				"type": "String"
+			},
+			{
+				"name": "createdby",
+				"type": "String"
+			},
+			{
+				"name": "createdtransactionid",
+				"type": "String"
+			},
+			{
+				"name": "dataareaid",
+				"type": "String"
+			},
+			{
+				"name": "recversion",
+				"type": "String"
+			},
+			{
+				"name": "partition",
+				"type": "String"
+			},
+			{
+				"name": "sysrowversion",
+				"type": "String"
+			},
+			{
+				"name": "recid",
+				"type": "String"
+			},
+			{
+				"name": "tableid",
+				"type": "String"
+			},
+			{
+				"name": "versionnumber",
+				"type": "String"
+			},
+			{
+				"name": "createdon",
+				"type": "String"
+			},
+			{
+				"name": "modifiedon",
+				"type": "String"
+			},
+			{
+				"name": "IsDelete",
+				"type": "String"
+			},
+			{
+				"name": "createdonpartition",
+				"type": "String"
+			},
+			{
+				"name": "PartitionId",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

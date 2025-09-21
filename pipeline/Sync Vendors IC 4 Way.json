@@ -1,0 +1,48 @@
+{
+	"name": "Sync Vendors IC 4 Way",
+	"properties": {
+		"activities": [
+			{
+				"name": "Sync Vendors IC 4 Way",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "SyncVendors_CustWH_SourcingWH_Test",
+						"type": "DataFlowReference",
+						"parameters": {
+							"Container": {
+								"value": "'@{pipeline().globalParameters.FO_Synapse_Container}'",
+								"type": "Expression"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"parameters": {
+			"Container": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "OL/General"
+		},
+		"annotations": [],
+		"lastPublishTime": "2025-09-05T14:54:29Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

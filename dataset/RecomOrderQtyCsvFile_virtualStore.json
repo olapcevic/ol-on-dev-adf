@@ -1,0 +1,49 @@
+{
+	"name": "RecomOrderQtyCsvFile_virtualStore",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "storageaccount",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "RecOrderQtyVS.csv",
+				"container": "whsstockreplenish"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "crd3c_name",
+				"type": "String"
+			},
+			{
+				"name": "crd3c_variantname",
+				"type": "String"
+			},
+			{
+				"name": "crd3c_barcode",
+				"type": "String"
+			},
+			{
+				"name": "crd3c_productnumber",
+				"type": "String"
+			},
+			{
+				"name": "crd3c_dataarea",
+				"type": "String"
+			},
+			{
+				"name": "crd3c_size",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

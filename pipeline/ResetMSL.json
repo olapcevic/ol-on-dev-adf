@@ -1,0 +1,43 @@
+{
+	"name": "ResetMSL",
+	"properties": {
+		"activities": [
+			{
+				"name": "ResetMSL",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "Reset MSL when no forecast",
+						"type": "DataFlowReference",
+						"parameters": {
+							"companyFetchXML": "'<value>onuk</value>'",
+							"CompanyList": "['onuk']",
+							"StoreList": "['SOU-PF-STK']",
+							"storeFetchXML": "'<value>SOU-PF-STK</value>'"
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "OL/MSL - Forecast"
+		},
+		"annotations": [],
+		"lastPublishTime": "2025-09-21T20:41:04Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

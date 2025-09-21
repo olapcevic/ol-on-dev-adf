@@ -1,0 +1,23 @@
+{
+	"name": "powerappdataverse",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "CommonDataServiceForApps",
+		"typeProperties": {
+			"deploymentType": "Online",
+			"serviceUri": "https://org1d92e709.crm4.dynamics.com/",
+			"authenticationType": "AADServicePrincipal",
+			"servicePrincipalCredentialType": "ServicePrincipalKey",
+			"servicePrincipalId": "614b099c-972d-418d-b1de-5a3b1e582328",
+			"servicePrincipalCredential": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "ONKeys",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "AppRegistrationClientSecret"
+			}
+		}
+	}
+}

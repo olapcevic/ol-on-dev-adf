@@ -1,0 +1,108 @@
+{
+	"name": "TempCsvFilePO",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "storageaccount",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"container": "whsstockreplenish"
+			},
+			"columnDelimiter": ";",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "hso_dataarea",
+				"type": "String"
+			},
+			{
+				"name": "hso_fromwhsqty",
+				"type": "String"
+			},
+			{
+				"name": "hso_inboundorderqty",
+				"type": "String"
+			},
+			{
+				"name": "hso_item",
+				"type": "String"
+			},
+			{
+				"name": "hso_itemdescription",
+				"type": "String"
+			},
+			{
+				"name": "hso_itemvariant",
+				"type": "String"
+			},
+			{
+				"name": "hso_name",
+				"type": "String"
+			},
+			{
+				"name": "hso_orderquantity",
+				"type": "String"
+			},
+			{
+				"name": "hso_ponumber",
+				"type": "String"
+			},
+			{
+				"name": "hso_ponumbername",
+				"type": "String"
+			},
+			{
+				"name": "hso_purchaseorderlinesid",
+				"type": "String"
+			},
+			{
+				"name": "hso_purchaseorderplaced",
+				"type": "String"
+			},
+			{
+				"name": "hso_purchaseorderplacedname",
+				"type": "String"
+			},
+			{
+				"name": "hso_site",
+				"type": "String"
+			},
+			{
+				"name": "hso_size",
+				"type": "String"
+			},
+			{
+				"name": "hso_sourceicwarehouse",
+				"type": "String"
+			},
+			{
+				"name": "hso_store",
+				"type": "String"
+			},
+			{
+				"name": "hso_storeminquantity",
+				"type": "String"
+			},
+			{
+				"name": "hso_storequantity",
+				"type": "String"
+			},
+			{
+				"name": "hso_batchid",
+				"type": "String"
+			},
+			{
+				"name": "hso_barcode",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

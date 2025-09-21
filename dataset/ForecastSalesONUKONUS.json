@@ -1,0 +1,46 @@
+{
+	"name": "ForecastSalesONUKONUS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "storageaccount",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "OL/Sample Data"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "ForecastSalesONUKONUS.csv",
+				"folderPath": "OL",
+				"container": "whsstockreplenish"
+			},
+			"columnDelimiter": ",",
+			"rowDelimiter": "\n",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "dataareaid",
+				"type": "String"
+			},
+			{
+				"name": "itemid",
+				"type": "String"
+			},
+			{
+				"name": "salesqty",
+				"type": "String"
+			},
+			{
+				"name": "inventdimid",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,126 @@
+{
+	"name": "DeleteUOItems",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "UOItem",
+						"type": "DatasetReference"
+					},
+					"name": "UOItem"
+				},
+				{
+					"dataset": {
+						"referenceName": "UOItemCsvFile",
+						"type": "DatasetReference"
+					},
+					"name": "UOItemCsv"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "UOItem",
+						"type": "DatasetReference"
+					},
+					"name": "sinkDelete"
+				}
+			],
+			"transformations": [
+				{
+					"name": "exists"
+				},
+				{
+					"name": "MarkRecordsToDelete"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          crd3c_barcode as string,",
+				"          crd3c_dataarea as string,",
+				"          crd3c_datastatus as integer,",
+				"          crd3c_datastatusname as string,",
+				"          crd3c_gender as string,",
+				"          crd3c_name as string,",
+				"          crd3c_productnumber as string,",
+				"          crd3c_simpleid as string,",
+				"          crd3c_size as string,",
+				"          crd3c_uoitemid as string,",
+				"          crd3c_variantname as string,",
+				"          createdbyname as string,",
+				"          createdbyyominame as string,",
+				"          createdon as timestamp,",
+				"          createdonbehalfbyname as string,",
+				"          createdonbehalfbyyominame as string,",
+				"          importsequencenumber as integer,",
+				"          modifiedbyname as string,",
+				"          modifiedbyyominame as string,",
+				"          modifiedon as timestamp,",
+				"          modifiedonbehalfbyname as string,",
+				"          modifiedonbehalfbyyominame as string,",
+				"          overriddencreatedon as timestamp,",
+				"          owneridname as string,",
+				"          owneridtype as string,",
+				"          owneridyominame as string,",
+				"          owningbusinessunitname as string,",
+				"          statecode as integer,",
+				"          statecodename as string,",
+				"          statuscode as integer,",
+				"          statuscodename as string,",
+				"          timezoneruleversionnumber as integer,",
+				"          utcconversiontimezonecode as integer,",
+				"          versionnumber as long,",
+				"          createdonbehalfby as string,",
+				"          owninguser as string,",
+				"          modifiedby as string,",
+				"          modifiedonbehalfby as string,",
+				"          ownerid as string,",
+				"          {@odata.etag} as string,",
+				"          createdby as string,",
+				"          owningbusinessunit as string,",
+				"          owningteam as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false) ~> UOItem",
+				"source(output(",
+				"          crd3c_name as string,",
+				"          crd3c_variantname as string,",
+				"          crd3c_barcode as string,",
+				"          crd3c_productnumber as string,",
+				"          crd3c_dataarea as string,",
+				"          crd3c_size as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     wildcardPaths:['UOItem.csv']) ~> UOItemCsv",
+				"UOItem, UOItemCsv exists(UOItem@crd3c_dataarea == UOItemCsv@crd3c_dataarea",
+				"     && UOItem@crd3c_name == UOItemCsv@crd3c_name,",
+				"     negate:true,",
+				"     broadcast: 'auto')~> exists",
+				"exists alterRow(deleteIf(true())) ~> MarkRecordsToDelete",
+				"MarkRecordsToDelete select(mapColumn(",
+				"          crd3c_name,",
+				"          {@odata.etag},",
+				"          crd3c_dataarea",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:true,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     alternateKeyName: 'crd3c_le_variant',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sinkDelete"
+			]
+		}
+	}
+}

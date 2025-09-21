@@ -1,0 +1,60 @@
+{
+	"name": "Vendors ONKR",
+	"properties": {
+		"folder": {
+			"name": "OL/General"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "D365FOSynapseDelta",
+						"type": "LinkedServiceReference"
+					},
+					"name": "VendorsONKR",
+					"description": "Pull only vendors ONKR from Synapse"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "storageaccount",
+						"type": "LinkedServiceReference"
+					},
+					"name": "SinkVendorONKR"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     Container as string ('dataverse-ontest-unqccd0037834be4cec846b41a3ea290')",
+				"}",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'delta',",
+				"     fileSystem: 'dataverse-ontest-unqccd0037834be4cec846b41a3ea290',",
+				"     folderPath: 'silver_delta/vend_onkr') ~> VendorsONKR",
+				"VendorsONKR select(skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delimited',",
+				"     container: 'whsstockreplenish',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: true,",
+				"     partitionFileNames:['vendorONKR_1'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SinkVendorONKR"
+			]
+		}
+	}
+}

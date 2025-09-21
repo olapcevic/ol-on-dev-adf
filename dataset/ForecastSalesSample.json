@@ -1,0 +1,61 @@
+{
+	"name": "ForecastSalesSample",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "storageaccount",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "OL/Sample Data"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "ForecastSalesSample.csv",
+				"folderPath": "OL",
+				"container": "whsstockreplenish"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "itemid",
+				"type": "String"
+			},
+			{
+				"name": "startdate",
+				"type": "String"
+			},
+			{
+				"name": "inventdimid",
+				"type": "String"
+			},
+			{
+				"name": "salesqty",
+				"type": "String"
+			},
+			{
+				"name": "dataareaid",
+				"type": "String"
+			},
+			{
+				"name": "suntafforecastchannelid",
+				"type": "String"
+			},
+			{
+				"name": "modelid",
+				"type": "String"
+			},
+			{
+				"name": "custgroupid",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

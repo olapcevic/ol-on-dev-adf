@@ -1,0 +1,104 @@
+{
+	"name": "TempCsvFile",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "storageaccount",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"container": "whsstockreplenish"
+			},
+			"columnDelimiter": ";",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "cr5b1_dataarea",
+				"type": "String"
+			},
+			{
+				"name": "cr5b1_item",
+				"type": "String"
+			},
+			{
+				"name": "cr5b1_size",
+				"type": "String"
+			},
+			{
+				"name": "cr5b1_site",
+				"type": "String"
+			},
+			{
+				"name": "crd3c_storeavailqty",
+				"type": "String"
+			},
+			{
+				"name": "cr5b1_itemvariant",
+				"type": "String"
+			},
+			{
+				"name": "crd3c_storeminqty",
+				"type": "String"
+			},
+			{
+				"name": "cr5b1_itemdescription",
+				"type": "String"
+			},
+			{
+				"name": "cr5b1_towhs",
+				"type": "String"
+			},
+			{
+				"name": "cr5b1_fromwhs",
+				"type": "String"
+			},
+			{
+				"name": "crd3c_fromwhsstockqty",
+				"type": "String"
+			},
+			{
+				"name": "crd3c_inboundorderqty",
+				"type": "String"
+			},
+			{
+				"name": "crd3c_batchid",
+				"type": "String"
+			},
+			{
+				"name": "crd3c_name",
+				"type": "String"
+			},
+			{
+				"name": "crd3c_toqty",
+				"type": "String"
+			},
+			{
+				"name": "cr5b1_createddate",
+				"type": "String"
+			},
+			{
+				"name": "crd3c_transferorderid",
+				"type": "String"
+			},
+			{
+				"name": "hso_barcode",
+				"type": "String"
+			},
+			{
+				"name": "hso_batchnumber",
+				"type": "String"
+			},
+			{
+				"name": "hso_itemgroupid",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
