@@ -1,0 +1,300 @@
+{
+	"name": "CreateRecOrderQtyCsv_VirtualStores_v1",
+	"properties": {
+		"folder": {
+			"name": "OL/MSL Sync"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "1ME10030553",
+						"type": "DatasetReference"
+					},
+					"name": "ForecastSalesONUKONUS"
+				},
+				{
+					"dataset": {
+						"referenceName": "BarcodeONUKONUS",
+						"type": "DatasetReference"
+					},
+					"name": "BarcodeONUKONUS"
+				},
+				{
+					"dataset": {
+						"referenceName": "InventdimONUKONUS",
+						"type": "DatasetReference"
+					},
+					"name": "InventdimONUKONUS"
+				},
+				{
+					"dataset": {
+						"referenceName": "ItemONUKONUS",
+						"type": "DatasetReference"
+					},
+					"name": "ItemONUKONUS"
+				},
+				{
+					"dataset": {
+						"referenceName": "WHONUKONUS",
+						"type": "DatasetReference"
+					},
+					"name": "WHONUKONUS"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "storageaccount",
+						"type": "LinkedServiceReference"
+					},
+					"name": "createCsv"
+				}
+			],
+			"transformations": [
+				{
+					"name": "joinWhsItem"
+				},
+				{
+					"name": "selectJoinWhsItem"
+				},
+				{
+					"name": "selectWarehouses"
+				},
+				{
+					"name": "SelectInventDimIdAndBarcodeNum"
+				},
+				{
+					"name": "GetBarcode"
+				},
+				{
+					"name": "LookupMSLForVirtualStores"
+				},
+				{
+					"name": "AddMSL"
+				},
+				{
+					"name": "SelectInventSizeIdAndInventDimId"
+				},
+				{
+					"name": "GetInventSizeId"
+				},
+				{
+					"name": "FinalSelectBarcodeInventSizeId"
+				},
+				{
+					"name": "FSGetInventSizeId"
+				},
+				{
+					"name": "SelectInventSizeForFS"
+				},
+				{
+					"name": "MSL"
+				},
+				{
+					"name": "DualPurposeStoresOnly"
+				},
+				{
+					"name": "SelectStoreAndSize"
+				},
+				{
+					"name": "CalculateMSL"
+				},
+				{
+					"name": "DualPurposeStores"
+				},
+				{
+					"name": "SelectDualPurposeStores"
+				},
+				{
+					"name": "TomorrowDate"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     Container as string ('dataverse-ontest-unqccd0037834be4cec846b41a3ea290')",
+				"}",
+				"source(output(",
+				"          dataareaid as string,",
+				"          itemid as string,",
+				"          salesqty as integer,",
+				"          inventdimid as string,",
+				"          startdate as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> ForecastSalesONUKONUS",
+				"source(output(",
+				"          inventdimid as string,",
+				"          itembarcode as string,",
+				"          itemid as string,",
+				"          dataareaid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> BarcodeONUKONUS",
+				"source(output(",
+				"          inventdimid as string,",
+				"          inventlocationid as string,",
+				"          inventsizeid as string,",
+				"          dataareaid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> InventdimONUKONUS",
+				"source(output(",
+				"          crd3c_barcode as string,",
+				"          crd3c_dataarea as string,",
+				"          crd3c_size as string,",
+				"          crd3c_simpleid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> ItemONUKONUS",
+				"source(output(",
+				"          crd3c_dataarea as string,",
+				"          crd3c_name as string,",
+				"          hso_vendor as string,",
+				"          crd3c_sourcewhname as string,",
+				"          hso_dualpurpose as boolean",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> WHONUKONUS",
+				"ItemONUKONUS, selectWarehouses join(upper(ItemONUKONUS@crd3c_dataarea) == upper(selectWarehouses@crd3c_dataarea),",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinWhsItem",
+				"joinWhsItem select(mapColumn(",
+				"          crd3c_barcode,",
+				"          crd3c_name,",
+				"          crd3c_dataarea = ItemONUKONUS@crd3c_dataarea,",
+				"          crd3c_size,",
+				"          crd3c_name",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectJoinWhsItem",
+				"WHONUKONUS select(mapColumn(",
+				"          crd3c_name,",
+				"          crd3c_dataarea,",
+				"          hso_dualpurpose",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectWarehouses",
+				"BarcodeONUKONUS select(mapColumn(",
+				"          inventdimid,",
+				"          itemid,",
+				"          dataareaid,",
+				"          itembarcode",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectInventDimIdAndBarcodeNum",
+				"SelectInventSizeForFS, FinalSelectBarcodeInventSizeId lookup(SelectInventSizeForFS@itemid == FinalSelectBarcodeInventSizeId@itemid",
+				"     && SelectInventSizeForFS@inventsizeid == FinalSelectBarcodeInventSizeId@inventsizeid",
+				"     && SelectInventSizeForFS@dataareaid == FinalSelectBarcodeInventSizeId@dataareaid,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> GetBarcode",
+				"selectJoinWhsItem, MSL lookup(crd3c_barcode == itembarcode",
+				"     && crd3c_dataarea == dataareaid",
+				"     && crd3c_name == inventlocationid,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> LookupMSLForVirtualStores",
+				"LookupMSLForVirtualStores select(mapColumn(",
+				"          crd3c_barcode,",
+				"          crd3c_dataarea,",
+				"          crd3c_name,",
+				"          crd3c_Quantity = salesqty",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> AddMSL",
+				"InventdimONUKONUS select(mapColumn(",
+				"          inventdimid,",
+				"          inventsizeid,",
+				"          inventlocationid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectInventSizeIdAndInventDimId",
+				"SelectInventDimIdAndBarcodeNum, SelectInventSizeIdAndInventDimId join(SelectInventDimIdAndBarcodeNum@inventdimid == SelectInventSizeIdAndInventDimId@inventdimid,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> GetInventSizeId",
+				"GetInventSizeId select(mapColumn(",
+				"          inventdimid = SelectInventDimIdAndBarcodeNum@inventdimid,",
+				"          dataareaid,",
+				"          itembarcode,",
+				"          inventsizeid,",
+				"          itemid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> FinalSelectBarcodeInventSizeId",
+				"TomorrowDate, SelectInventSizeIdAndInventDimId lookup(ForecastSalesONUKONUS@inventdimid == SelectInventSizeIdAndInventDimId@inventdimid,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> FSGetInventSizeId",
+				"CalculateMSL select(mapColumn(",
+				"          itemid,",
+				"          inventsizeid,",
+				"          dataareaid,",
+				"          inventlocationid,",
+				"          salesqty",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectInventSizeForFS",
+				"GetBarcode select(mapColumn(",
+				"          itembarcode,",
+				"          salesqty,",
+				"          dataareaid = SelectInventSizeForFS@dataareaid,",
+				"          inventlocationid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> MSL",
+				"SelectStoreAndSize, SelectDualPurposeStores join(inventlocationid == crd3c_name",
+				"     && dataareaid == crd3c_dataarea,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> DualPurposeStoresOnly",
+				"FSGetInventSizeId select(mapColumn(",
+				"          itemid,",
+				"          salesqty,",
+				"          dataareaid,",
+				"          inventsizeid,",
+				"          inventlocationid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectStoreAndSize",
+				"DualPurposeStoresOnly aggregate(groupBy(itemid,",
+				"          dataareaid,",
+				"          inventsizeid,",
+				"          inventlocationid),",
+				"     salesqty = sum(salesqty)) ~> CalculateMSL",
+				"selectWarehouses filter(hso_dualpurpose == true()) ~> DualPurposeStores",
+				"DualPurposeStores select(mapColumn(",
+				"          crd3c_name,",
+				"          crd3c_dataarea",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectDualPurposeStores",
+				"ForecastSalesONUKONUS filter(toDate(toString(startdate)) == addDays(currentDate(), 1)) ~> TomorrowDate",
+				"AddMSL sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delimited',",
+				"     container: 'whsstockreplenish',",
+				"     folderPath: 'OL/',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: true,",
+				"     partitionFileNames:['RecommenderV1.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> createCsv"
+			]
+		}
+	}
+}

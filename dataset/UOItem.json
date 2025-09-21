@@ -1,0 +1,16 @@
+{
+	"name": "UOItem",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "powerappdataverse",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "CommonDataServiceForAppsEntity",
+		"schema": [],
+		"typeProperties": {
+			"entityName": "crd3c_uoitem"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

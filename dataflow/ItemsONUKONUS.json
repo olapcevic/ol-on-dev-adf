@@ -1,0 +1,108 @@
+{
+	"name": "ItemsONUKONUS",
+	"properties": {
+		"folder": {
+			"name": "OL/Sample Data"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "UOItem",
+						"type": "DatasetReference"
+					},
+					"name": "ItemONUK"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "storageaccount",
+						"type": "LinkedServiceReference"
+					},
+					"name": "WriteToItemONUK"
+				}
+			],
+			"transformations": [
+				{
+					"name": "ONUK"
+				},
+				{
+					"name": "SelectKeyColumns"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          crd3c_barcode as string,",
+				"          crd3c_dataarea as string,",
+				"          crd3c_datastatus as integer,",
+				"          crd3c_datastatusname as string,",
+				"          crd3c_gender as string,",
+				"          crd3c_name as string,",
+				"          crd3c_productnumber as string,",
+				"          crd3c_simpleid as string,",
+				"          crd3c_size as string,",
+				"          crd3c_uoitemid as string,",
+				"          crd3c_variantname as string,",
+				"          createdbyname as string,",
+				"          createdbyyominame as string,",
+				"          createdon as timestamp,",
+				"          createdonbehalfbyname as string,",
+				"          createdonbehalfbyyominame as string,",
+				"          importsequencenumber as integer,",
+				"          modifiedbyname as string,",
+				"          modifiedbyyominame as string,",
+				"          modifiedon as timestamp,",
+				"          modifiedonbehalfbyname as string,",
+				"          modifiedonbehalfbyyominame as string,",
+				"          overriddencreatedon as timestamp,",
+				"          owneridname as string,",
+				"          owneridtype as string,",
+				"          owneridyominame as string,",
+				"          owningbusinessunitname as string,",
+				"          statecode as integer,",
+				"          statecodename as string,",
+				"          statuscode as integer,",
+				"          statuscodename as string,",
+				"          timezoneruleversionnumber as integer,",
+				"          utcconversiontimezonecode as integer,",
+				"          versionnumber as long,",
+				"          createdonbehalfby as string,",
+				"          owninguser as string,",
+				"          modifiedby as string,",
+				"          modifiedonbehalfby as string,",
+				"          ownerid as string,",
+				"          {@odata.etag} as string,",
+				"          createdby as string,",
+				"          owningbusinessunit as string,",
+				"          owningteam as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false) ~> ItemONUK",
+				"ItemONUK filter(crd3c_dataarea == 'onuk' || crd3c_dataarea == 'onus') ~> ONUK",
+				"ONUK select(mapColumn(",
+				"          crd3c_barcode,",
+				"          crd3c_dataarea,",
+				"          crd3c_size,",
+				"          crd3c_simpleid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectKeyColumns",
+				"SelectKeyColumns sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delimited',",
+				"     container: 'whsstockreplenish',",
+				"     folderPath: 'OL/',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: true,",
+				"     partitionFileNames:['ForecastSalesONUKONUS.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> WriteToItemONUK"
+			]
+		}
+	}
+}

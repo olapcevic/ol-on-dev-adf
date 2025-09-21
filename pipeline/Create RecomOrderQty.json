@@ -1,0 +1,62 @@
+{
+	"name": "Create RecomOrderQty",
+	"properties": {
+		"activities": [
+			{
+				"name": "Create RecOrderQtyCsv",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "CreateRecOrderQtyCsv",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Copy csv to Dataverse",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Create RecOrderQtyCsv",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Copy RecomOrderQty csv to Dataverse",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"variables": {
+			"Error": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2025-08-25T20:06:06Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

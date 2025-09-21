@@ -1,0 +1,37 @@
+{
+	"name": "ForecastSalesFull_Performance",
+	"properties": {
+		"activities": [
+			{
+				"name": "ForecastSalesFull_Performance",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "ForecastSalesFull_Performance",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "OL/Performance"
+		},
+		"annotations": [],
+		"lastPublishTime": "2025-09-21T11:47:26Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

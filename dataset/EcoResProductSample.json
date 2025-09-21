@@ -1,0 +1,45 @@
+{
+	"name": "EcoResProductSample",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "storageaccount",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "OL/Sample Data"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "EcoResProduct_Sample.csv",
+				"folderPath": "OL",
+				"container": "whsstockreplenish"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "displayproductnumber",
+				"type": "String"
+			},
+			{
+				"name": "searchname",
+				"type": "String"
+			},
+			{
+				"name": "recid",
+				"type": "String"
+			},
+			{
+				"name": "partition",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

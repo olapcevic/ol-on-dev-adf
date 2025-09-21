@@ -1,0 +1,45 @@
+{
+	"name": "ItemONUKONUS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "storageaccount",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "OL/Sample Data"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "ItemONUKONUS.csv",
+				"folderPath": "OL",
+				"container": "whsstockreplenish"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "crd3c_barcode",
+				"type": "String"
+			},
+			{
+				"name": "crd3c_dataarea",
+				"type": "String"
+			},
+			{
+				"name": "crd3c_size",
+				"type": "String"
+			},
+			{
+				"name": "crd3c_simpleid",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

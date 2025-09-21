@@ -1,0 +1,123 @@
+{
+	"name": "dummyorders",
+	"properties": {
+		"folder": {
+			"name": "JL/New folder"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dummy_orders",
+						"type": "DatasetReference"
+					},
+					"name": "dummyorders"
+				},
+				{
+					"dataset": {
+						"referenceName": "dummy_company",
+						"type": "DatasetReference"
+					},
+					"name": "dummycompany"
+				},
+				{
+					"dataset": {
+						"referenceName": "testOrders",
+						"type": "DatasetReference"
+					},
+					"name": "testOrders"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "storageaccount",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink1"
+				},
+				{
+					"linkedService": {
+						"referenceName": "storageaccount",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink2"
+				}
+			],
+			"transformations": [
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "lookup1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          itemid as string,",
+				"          quantity as short,",
+				"          company as string,",
+				"          {order date} as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> dummyorders",
+				"source(output(",
+				"          company as string,",
+				"          revenue as short,",
+				"          {start date} as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> dummycompany",
+				"source(output(",
+				"          itemid as string,",
+				"          quantity as short,",
+				"          company as string,",
+				"          {order date} as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> testOrders",
+				"dummyorders filter(company == 'COMP_A') ~> filter1",
+				"dummycompany select(mapColumn(",
+				"          company",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"testOrders, dummycompany lookup(testOrders@company == dummycompany@company,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup1",
+				"filter1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delimited',",
+				"     container: 'whsstockreplenish',",
+				"     folderPath: 'JL',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: true,",
+				"     partitionFileNames:['dummyOrders.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1",
+				"lookup1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delimited',",
+				"     container: 'whsstockreplenish',",
+				"     folderPath: 'JL',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink2"
+			]
+		}
+	}
+}

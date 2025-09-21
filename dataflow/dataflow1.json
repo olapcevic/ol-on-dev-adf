@@ -1,0 +1,61 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"folder": {
+			"name": "JL/New folder"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ProductCategories",
+						"type": "DatasetReference"
+					},
+					"name": "ProductCategories"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "storageaccount",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "aggregate1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          TransactionID as short,",
+				"          Category as string,",
+				"          Product as string,",
+				"          Amount as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> ProductCategories",
+				"ProductCategories aggregate(groupBy(Category),",
+				"     Amount = sum(Amount),",
+				"          TotalRevenu = sum(Amount)) ~> aggregate1",
+				"aggregate1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delimited',",
+				"     container: 'whsstockreplenish',",
+				"     folderPath: 'JL',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: false,",
+				"     partitionFileNames:['CategoryPerProductTotal.xls'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}

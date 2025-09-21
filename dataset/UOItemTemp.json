@@ -1,0 +1,201 @@
+{
+	"name": "UOItemTemp",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "storageaccount",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "OL/General"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "UOItemTmp_2.csv",
+				"container": "whsstockreplenish"
+			},
+			"columnDelimiter": ",",
+			"rowDelimiter": "\n",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "crd3c_barcode",
+				"type": "String"
+			},
+			{
+				"name": "crd3c_dataarea",
+				"type": "String"
+			},
+			{
+				"name": "crd3c_datastatus",
+				"type": "String"
+			},
+			{
+				"name": "crd3c_datastatusname",
+				"type": "String"
+			},
+			{
+				"name": "crd3c_gender",
+				"type": "String"
+			},
+			{
+				"name": "crd3c_name",
+				"type": "String"
+			},
+			{
+				"name": "crd3c_productnumber",
+				"type": "String"
+			},
+			{
+				"name": "crd3c_simpleid",
+				"type": "String"
+			},
+			{
+				"name": "crd3c_size",
+				"type": "String"
+			},
+			{
+				"name": "crd3c_uoitemid",
+				"type": "String"
+			},
+			{
+				"name": "crd3c_variantname",
+				"type": "String"
+			},
+			{
+				"name": "createdbyname",
+				"type": "String"
+			},
+			{
+				"name": "createdbyyominame",
+				"type": "String"
+			},
+			{
+				"name": "createdon",
+				"type": "String"
+			},
+			{
+				"name": "createdonbehalfbyname",
+				"type": "String"
+			},
+			{
+				"name": "createdonbehalfbyyominame",
+				"type": "String"
+			},
+			{
+				"name": "importsequencenumber",
+				"type": "String"
+			},
+			{
+				"name": "modifiedbyname",
+				"type": "String"
+			},
+			{
+				"name": "modifiedbyyominame",
+				"type": "String"
+			},
+			{
+				"name": "modifiedon",
+				"type": "String"
+			},
+			{
+				"name": "modifiedonbehalfbyname",
+				"type": "String"
+			},
+			{
+				"name": "modifiedonbehalfbyyominame",
+				"type": "String"
+			},
+			{
+				"name": "overriddencreatedon",
+				"type": "String"
+			},
+			{
+				"name": "owneridname",
+				"type": "String"
+			},
+			{
+				"name": "owneridtype",
+				"type": "String"
+			},
+			{
+				"name": "owneridyominame",
+				"type": "String"
+			},
+			{
+				"name": "owningbusinessunitname",
+				"type": "String"
+			},
+			{
+				"name": "statecode",
+				"type": "String"
+			},
+			{
+				"name": "statecodename",
+				"type": "String"
+			},
+			{
+				"name": "statuscode",
+				"type": "String"
+			},
+			{
+				"name": "statuscodename",
+				"type": "String"
+			},
+			{
+				"name": "timezoneruleversionnumber",
+				"type": "String"
+			},
+			{
+				"name": "utcconversiontimezonecode",
+				"type": "String"
+			},
+			{
+				"name": "versionnumber",
+				"type": "String"
+			},
+			{
+				"name": "createdonbehalfby",
+				"type": "String"
+			},
+			{
+				"name": "owninguser",
+				"type": "String"
+			},
+			{
+				"name": "modifiedby",
+				"type": "String"
+			},
+			{
+				"name": "modifiedonbehalfby",
+				"type": "String"
+			},
+			{
+				"name": "ownerid",
+				"type": "String"
+			},
+			{
+				"name": "odata",
+				"type": "String"
+			},
+			{
+				"name": "createdby",
+				"type": "String"
+			},
+			{
+				"name": "owningbusinessunit",
+				"type": "String"
+			},
+			{
+				"name": "owningteam",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

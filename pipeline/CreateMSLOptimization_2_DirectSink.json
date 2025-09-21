@@ -1,0 +1,169 @@
+{
+	"name": "CreateMSLOptimization_2_DirectSink",
+	"properties": {
+		"activities": [
+			{
+				"name": "Create RecOrderQtyCsv",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "companyFetchXML",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "CreateMSLOptimization_2_DirectSink",
+						"type": "DataFlowReference",
+						"parameters": {
+							"Container": {
+								"value": "'@{pipeline().globalParameters.FO_Synapse_Container}'",
+								"type": "Expression"
+							},
+							"CompanyList": {
+								"value": "@variables('CompanyList')",
+								"type": "Expression"
+							},
+							"companyFetchXML": {
+								"value": "'@{variables('companyFetchXML')}'",
+								"type": "Expression"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "LookupDualPurposeCompanies",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "CommonDataServiceForAppsSource",
+						"query": {
+							"value": "<fetch version=\"1.0\"\n       mapping=\"logical\"\n       distinct=\"true\"\n       savedqueryid=\"41c7362d-ac5a-ed11-9562-000d3aba35c5\"\n       no-lock=\"false\">\n\t<entity name=\"crd3c_uowarehouses\">\n\t\t<attribute name=\"statecode\"/>\n\t\t<attribute name=\"crd3c_uowarehousesid\"/>\n\t\t<attribute name=\"crd3c_name\"/>\n\t\t<attribute name=\"crd3c_dataarea\"/>\n\t\t<filter type=\"and\">\n\t\t\t<condition attribute=\"statecode\"\n\t\t\t           operator=\"eq\"\n\t\t\t           value=\"0\"/>\n\t\t\t<condition attribute=\"hso_dualpurpose\"\n\t\t\t           operator=\"eq\"\n\t\t\t           value=\"1\"/>\n\t\t\t<condition attribute=\"crd3c_warehousetype\"\n\t\t\t           operator=\"eq\"\n\t\t\t           value=\"STOCK\"/>\n\t\t\t<condition attribute=\"hso_ordertypesplit\"\n\t\t\t           operator=\"eq\"\n\t\t\t           value=\"1\"/>\n\t\t</filter>\n\t</entity>\n</fetch>",
+							"type": "Expression"
+						}
+					},
+					"dataset": {
+						"referenceName": "UOWarehouses",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "DualPurposeCompanies",
+				"description": "Iterate all dual purpose companies",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "LookupDualPurposeCompanies",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('LookupDualPurposeCompanies').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Check for duplicates",
+							"type": "IfCondition",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@not(contains(variables('CompanyList'), item().crd3c_dataarea))\n",
+									"type": "Expression"
+								},
+								"ifTrueActivities": [
+									{
+										"name": "AddCompany",
+										"type": "AppendVariable",
+										"dependsOn": [],
+										"userProperties": [],
+										"typeProperties": {
+											"variableName": "CompanyList",
+											"value": {
+												"value": "@item().crd3c_dataarea",
+												"type": "Expression"
+											}
+										}
+									}
+								]
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "companyFetchXML",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "DualPurposeCompanies",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "companyFetchXML",
+					"value": {
+						"value": "@concat('<value>', join(variables('CompanyList'), '</value><value>'), '</value>')\n",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"variables": {
+			"CompanyList": {
+				"type": "Array"
+			},
+			"companiesString": {
+				"type": "String"
+			},
+			"companyFetchXML": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "OL/MSL - Forecast"
+		},
+		"annotations": [],
+		"lastPublishTime": "2025-09-19T12:16:15Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

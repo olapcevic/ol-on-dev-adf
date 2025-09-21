@@ -1,0 +1,16 @@
+{
+	"name": "DataversePurchaseOrderLines",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "powerappdataverse",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "CommonDataServiceForAppsEntity",
+		"schema": [],
+		"typeProperties": {
+			"entityName": "hso_purchaseorderlines"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

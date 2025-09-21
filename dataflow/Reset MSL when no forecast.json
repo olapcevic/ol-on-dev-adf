@@ -1,0 +1,129 @@
+{
+	"name": "Reset MSL when no forecast",
+	"properties": {
+		"description": "If there is no forecast for items today, then set their MSL to 0",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "RecommendedOrderQty",
+						"type": "DatasetReference"
+					},
+					"name": "RecommendedOrderQty"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "RecommendedOrderQty",
+						"type": "DatasetReference"
+					},
+					"name": "RecommendedOrderQtyResetMSL"
+				}
+			],
+			"transformations": [
+				{
+					"name": "GetMSL"
+				},
+				{
+					"name": "Update"
+				},
+				{
+					"name": "ResetMSL"
+				},
+				{
+					"name": "MSLGreaterThan0"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     companyFetchXML as string,",
+				"     CompanyList as string[],",
+				"     StoreList as string[],",
+				"     storeFetchXML as string",
+				"}",
+				"source(output(",
+				"          crd3c_availqty as integer,",
+				"          crd3c_barcode as string,",
+				"          crd3c_dataarea as string,",
+				"          crd3c_itemvariant as string,",
+				"          crd3c_itemvariantlookupname as string,",
+				"          crd3c_name as string,",
+				"          crd3c_orderqtiesid as string,",
+				"          crd3c_quantity as integer,",
+				"          crd3c_reqorderqty as integer,",
+				"          crd3c_site as string,",
+				"          crd3c_variantname as string,",
+				"          crd3c_warehouselookupname as string,",
+				"          createdbyname as string,",
+				"          createdbyyominame as string,",
+				"          createdon as timestamp,",
+				"          createdonbehalfbyname as string,",
+				"          createdonbehalfbyyominame as string,",
+				"          hso_fts as integer,",
+				"          hso_hasforecast as boolean,",
+				"          hso_hasforecastname as string,",
+				"          hso_maxquantity as integer,",
+				"          hso_minquantity as integer,",
+				"          hso_size as string,",
+				"          hso_teststring as string,",
+				"          importsequencenumber as integer,",
+				"          modifiedbyname as string,",
+				"          modifiedbyyominame as string,",
+				"          modifiedon as timestamp,",
+				"          modifiedonbehalfbyname as string,",
+				"          modifiedonbehalfbyyominame as string,",
+				"          overriddencreatedon as timestamp,",
+				"          owneridname as string,",
+				"          owneridtype as string,",
+				"          owneridyominame as string,",
+				"          owningbusinessunitname as string,",
+				"          statecode as integer,",
+				"          statecodename as string,",
+				"          statuscode as integer,",
+				"          statuscodename as string,",
+				"          timezoneruleversionnumber as integer,",
+				"          utcconversiontimezonecode as integer,",
+				"          versionnumber as long,",
+				"          crd3c_warehouselookup as string,",
+				"          createdonbehalfby as string,",
+				"          owninguser as string,",
+				"          modifiedby as string,",
+				"          modifiedonbehalfby as string,",
+				"          ownerid as string,",
+				"          {@odata.etag} as string,",
+				"          createdby as string,",
+				"          owningbusinessunit as string,",
+				"          crd3c_itemvariantlookup as string,",
+				"          owningteam as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     query: (concat('<fetch version=\"1.0\" output-format=\"xml-platform\" mapping=\"logical\" distinct=\"false\"><entity name=\"crd3c_orderqties\"><attribute name=\"crd3c_orderqtiesid\"/><attribute name=\"crd3c_dataarea\"/><attribute name=\"crd3c_quantity\"/><attribute name=\"crd3c_barcode\"/><attribute name=\"crd3c_site\"/><attribute name=\"crd3c_name\"/><attribute name=\"crd3c_itemvariant\"/><order attribute=\"crd3c_barcode\" descending=\"false\"/><filter type=\"and\"><filter type=\"or\"><condition attribute=\"crd3c_quantity\" operator=\"gt\" value=\"0\"/><condition attribute=\"hso_fts\" operator=\"gt\" value=\"0\"/></filter><condition attribute=\"crd3c_site\" operator=\"in\">',$storeFetchXML,' </condition><condition attribute=\"crd3c_dataarea\" operator=\"in\">',$companyFetchXML,' </condition></filter></entity></fetch>'))) ~> RecommendedOrderQty",
+				"RecommendedOrderQty select(mapColumn(",
+				"          crd3c_quantity,",
+				"          crd3c_barcode,",
+				"          crd3c_dataarea,",
+				"          crd3c_name,",
+				"          crd3c_itemvariant,",
+				"          crd3c_site",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> GetMSL",
+				"ResetMSL alterRow(updateIf(true())) ~> Update",
+				"MSLGreaterThan0 derive(crd3c_quantity = 0) ~> ResetMSL",
+				"GetMSL filter(coalesce(crd3c_quantity,0)>0) ~> MSLGreaterThan0",
+				"Update sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     alternateKeyName: 'hso_barcodekey',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> RecommendedOrderQtyResetMSL"
+			]
+		}
+	}
+}

@@ -1,0 +1,70 @@
+{
+	"name": "RevenuePerProduct",
+	"properties": {
+		"folder": {
+			"name": "JL/New folder"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "RevenuePerProduct",
+						"type": "DatasetReference"
+					},
+					"name": "RevenuePerProduct"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "storageaccount",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "aggregate1"
+				},
+				{
+					"name": "filter1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          TransactionID as short,",
+				"          Product as string,",
+				"          Price as short,",
+				"          Quantity as short,",
+				"          CustomerName as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> RevenuePerProduct",
+				"RevenuePerProduct derive(Quantity = coalesce(Quantity, 0)+1) ~> derivedColumn1",
+				"derivedColumn1 aggregate(groupBy(Product),",
+				"     Price = sum(Price),",
+				"          Quantity = avg(Quantity)) ~> aggregate1",
+				"aggregate1 filter(Product == 'Laptop') ~> filter1",
+				"filter1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delimited',",
+				"     container: 'whsstockreplenish',",
+				"     folderPath: 'JL',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: true,",
+				"     partitionFileNames:['Test1.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}

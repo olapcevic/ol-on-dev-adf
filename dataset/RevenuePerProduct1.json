@@ -1,0 +1,26 @@
+{
+	"name": "RevenuePerProduct1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "storageaccount",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "JL/New folder"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "new_16",
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "RevenuePerProduct1.xls",
+				"folderPath": "JL",
+				"container": "whsstockreplenish"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

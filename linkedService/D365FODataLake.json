@@ -1,0 +1,19 @@
+{
+	"name": "D365FODataLake",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobFS",
+		"typeProperties": {
+			"url": "https://onuatdatalakesps.dfs.core.windows.net/",
+			"accountKey": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "ONKeys",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "D365foDataLakeStorageKey"
+			}
+		}
+	}
+}

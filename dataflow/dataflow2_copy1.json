@@ -1,0 +1,111 @@
+{
+	"name": "dataflow2_copy1",
+	"properties": {
+		"folder": {
+			"name": "JL/MinimumStockLevel"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "MinimumStockLevel",
+						"type": "DatasetReference"
+					},
+					"name": "MinimumStockLevel"
+				},
+				{
+					"dataset": {
+						"referenceName": "Inventory",
+						"type": "DatasetReference"
+					},
+					"name": "Inventory"
+				},
+				{
+					"dataset": {
+						"referenceName": "Warehouse",
+						"type": "DatasetReference"
+					},
+					"name": "Warehouse"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "storageaccount",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "MSLGreaterthanZero"
+				},
+				{
+					"name": "joinMinStockAndInventory"
+				},
+				{
+					"name": "filterMSLGreaterthanPQAndOrdered"
+				},
+				{
+					"name": "join1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Item as string,",
+				"          Size as short,",
+				"          Warehouse as string,",
+				"          Company as string,",
+				"          MSL as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> MinimumStockLevel",
+				"source(output(",
+				"          WarehouseName as string,",
+				"          company as string,",
+				"          itemid as string,",
+				"          size as short,",
+				"          {PhysicalQuantity } as short,",
+				"          Ordered as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Inventory",
+				"source(output(",
+				"          WarehouseName as string,",
+				"          Company as string,",
+				"          SourcingWarehouse as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Warehouse",
+				"MinimumStockLevel filter(MSL>0) ~> MSLGreaterthanZero",
+				"Inventory, MSLGreaterthanZero join(itemid == Item,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinMinStockAndInventory",
+				"joinMinStockAndInventory filter(MSL> {PhysicalQuantity } + Ordered) ~> filterMSLGreaterthanPQAndOrdered",
+				"Warehouse, Inventory join(Warehouse@WarehouseName == Inventory@WarehouseName,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"MSLGreaterthanZero sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delimited',",
+				"     container: 'whsstockreplenish',",
+				"     folderPath: 'JL/MinimumStockTask',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}

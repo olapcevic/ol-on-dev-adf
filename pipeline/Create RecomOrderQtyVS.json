@@ -1,0 +1,113 @@
+{
+	"name": "Create RecomOrderQtyVS",
+	"properties": {
+		"activities": [
+			{
+				"name": "Create RecOrderQtyCsv",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "CreateRecOrderQtyCsv_VirtualStores",
+						"type": "DataFlowReference",
+						"parameters": {
+							"Container": {
+								"value": "'@{pipeline().globalParameters.FO_Synapse_Container}'",
+								"type": "Expression"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "CreateMSL",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Create RecOrderQtyCsv",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"wildcardFileName": "RecOrderQtyVS.csv",
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "CommonDataServiceForAppsSink",
+						"writeBatchSize": 999,
+						"writeBehavior": "upsert",
+						"ignoreNullValues": false,
+						"alternateKeyName": "crd3c_key",
+						"bypassPowerAutomateFlows": false
+					},
+					"enableStaging": false,
+					"parallelCopies": 30,
+					"enableSkipIncompatibleRow": true,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "RecomOrderQtyCsvFile_virtualStore",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "RecommendedOrderQty",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"variables": {
+			"Error": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "OL/MSL - Forecast"
+		},
+		"annotations": [],
+		"lastPublishTime": "2025-09-21T09:21:49Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

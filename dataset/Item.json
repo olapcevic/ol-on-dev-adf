@@ -1,0 +1,26 @@
+{
+	"name": "Item",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "storageaccount",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "JL/MinimumStockTask"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "Sheet1",
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Item.xlsx",
+				"folderPath": "JL/MinimumStockTask",
+				"container": "whsstockreplenish"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

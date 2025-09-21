@@ -1,0 +1,16 @@
+{
+	"name": "LegalEntity",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "powerappdataverse",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "CommonDataServiceForAppsEntity",
+		"schema": [],
+		"typeProperties": {
+			"entityName": "crd3c_legalentities"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

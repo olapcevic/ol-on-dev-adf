@@ -1,0 +1,11 @@
+{
+	"name": "ONKeys",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://ON-Keys-DEV.vault.azure.net/"
+		}
+	}
+}

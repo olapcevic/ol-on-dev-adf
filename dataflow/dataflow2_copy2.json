@@ -1,0 +1,155 @@
+{
+	"name": "dataflow2_copy2",
+	"properties": {
+		"folder": {
+			"name": "JL/MinimumStockLevel"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "MinimumStockLevel",
+						"type": "DatasetReference"
+					},
+					"name": "MinimumStockLevel"
+				},
+				{
+					"dataset": {
+						"referenceName": "Inventory",
+						"type": "DatasetReference"
+					},
+					"name": "Inventory"
+				},
+				{
+					"dataset": {
+						"referenceName": "Warehouse",
+						"type": "DatasetReference"
+					},
+					"name": "Warehouse"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "storageaccount",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "MSLGreaterthanZero"
+				},
+				{
+					"name": "joinMinStockAndInventory"
+				},
+				{
+					"name": "filterMSLGreaterthanPQAndOrdered"
+				},
+				{
+					"name": "JoinedWithInventory"
+				},
+				{
+					"name": "FilteredToOnlyWarehouses"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "SelectItemIdSizeWHN"
+				},
+				{
+					"name": "SelectThreeRows"
+				},
+				{
+					"name": "derivedColumn1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Item as string,",
+				"          Size as short,",
+				"          Warehouse as string,",
+				"          Company as string,",
+				"          MSL as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> MinimumStockLevel",
+				"source(output(",
+				"          WarehouseName as string,",
+				"          company as string,",
+				"          itemid as string,",
+				"          size as short,",
+				"          {PhysicalQuantity } as short,",
+				"          Ordered as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Inventory",
+				"source(output(",
+				"          WarehouseName as string,",
+				"          Company as string,",
+				"          SourcingWarehouse as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Warehouse",
+				"MinimumStockLevel filter(MSL>0) ~> MSLGreaterthanZero",
+				"Inventory, MSLGreaterthanZero join(itemid == Item,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinMinStockAndInventory",
+				"joinMinStockAndInventory filter(MSL> {PhysicalQuantity } + Ordered) ~> filterMSLGreaterthanPQAndOrdered",
+				"FilteredToOnlyWarehouses, Inventory join(Warehouse@WarehouseName == Inventory@WarehouseName,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinedWithInventory",
+				"Warehouse filter(SourcingWarehouse == 'BLUE' || SourcingWarehouse == 'GREEN' || SourcingWarehouse == 'YELLOW') ~> FilteredToOnlyWarehouses",
+				"SelectItemIdSizeWHN, SelectThreeRows join(SelectItemIdSizeWHN@itemid == SelectThreeRows@itemid",
+				"     && SelectItemIdSizeWHN@size == SelectThreeRows@Size",
+				"     && SourcingWarehouse == WarehouseName,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"JoinedWithInventory select(mapColumn(",
+				"          SourcingWarehouse,",
+				"          itemid,",
+				"          size,",
+				"          {PhysicalQuantity }",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectItemIdSizeWHN",
+				"derivedColumn1 select(mapColumn(",
+				"          WarehouseName,",
+				"          itemid,",
+				"          {PhysicalQuantity },",
+				"          Ordered,",
+				"          Size = MinimumStockLevel@Size,",
+				"          Warehouse,",
+				"          Company = MinimumStockLevel@Company,",
+				"          MSL",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectThreeRows",
+				"filterMSLGreaterthanPQAndOrdered derive(column1 = MSL-({PhysicalQuantity }+Ordered)) ~> derivedColumn1",
+				"MSLGreaterthanZero sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delimited',",
+				"     container: 'whsstockreplenish',",
+				"     folderPath: 'JL/MinimumStockTask',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}

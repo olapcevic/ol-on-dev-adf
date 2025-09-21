@@ -1,0 +1,66 @@
+{
+	"name": "BooleanValueTest",
+	"properties": {
+		"folder": {
+			"name": "OL/General"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "WHONUKONUS",
+						"type": "DatasetReference"
+					},
+					"name": "WH"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "storageaccount",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "derivedColumn1"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     isDualPurpose as boolean",
+				"}",
+				"source(output(",
+				"          crd3c_dataarea as string,",
+				"          crd3c_name as string,",
+				"          hso_vendor as string,",
+				"          crd3c_sourcewhname as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> WH",
+				"derivedColumn1 filter(isDP == $isDualPurpose) ~> filter1",
+				"WH derive(isDP = true()) ~> derivedColumn1",
+				"filter1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delimited',",
+				"     container: 'whsstockreplenish',",
+				"     folderPath: 'OL',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: false,",
+				"     partitionFileNames:['BooleanTest'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}
