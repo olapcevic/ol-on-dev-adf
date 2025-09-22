@@ -20,7 +20,32 @@
 			},
 			"firstRowAsHeader": true
 		},
-		"schema": []
+		"schema": [
+			{
+				"name": "WarehouseName",
+				"type": "String"
+			},
+			{
+				"name": "company",
+				"type": "String"
+			},
+			{
+				"name": "itemid",
+				"type": "String"
+			},
+			{
+				"name": "size",
+				"type": "String"
+			},
+			{
+				"name": "PhysicalQuantity",
+				"type": "String"
+			},
+			{
+				"name": "Ordered",
+				"type": "String"
+			}
+		]
 	},
 	"type": "Microsoft.DataFactory/factories/datasets"
 }
