@@ -1,0 +1,694 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "Dev-ADF-WhsStockReplenish"
+		},
+		"AzureFunction_functionKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'functionKey' of 'AzureFunction'"
+		},
+		"AzureFunction_properties_typeProperties_functionAppUrl": {
+			"type": "string",
+			"defaultValue": "https://dev-replappgeneralhelper.azurewebsites.net"
+		},
+		"ONKeys_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://ON-Keys-DEV.vault.azure.net/"
+		},
+		"D365FODataLake_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://onuatdatalakesps.dfs.core.windows.net/"
+		},
+		"D365FOSynapseDelta_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://ontestsynapsestorage.dfs.core.windows.net/"
+		},
+		"powerappdataverse_properties_typeProperties_servicePrincipalId": {
+			"type": "string",
+			"defaultValue": "614b099c-972d-418d-b1de-5a3b1e582328"
+		},
+		"storageaccount_properties_typeProperties_connectionString_secretName": {
+			"type": "string",
+			"defaultValue": "Repl-inv-app-storage-connectionstring"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureFunction')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureFunction",
+				"typeProperties": {
+					"functionAppUrl": "[parameters('AzureFunction_properties_typeProperties_functionAppUrl')]",
+					"authentication": "Anonymous",
+					"functionKey": {
+						"type": "SecureString",
+						"value": "[parameters('AzureFunction_functionKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ONKeys')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('ONKeys_properties_typeProperties_baseUrl')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/once a week')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Week",
+						"interval": 1,
+						"startTime": "2022-07-07T07:04:00Z",
+						"timeZone": "UTC",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								1
+							],
+							"weekDays": [
+								"Monday"
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/D365FODataLake')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('D365FODataLake_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "ONKeys",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "D365foDataLakeStorageKey"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ONKeys')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/D365FOSynapseDelta')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Synapse Delta source",
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('D365FOSynapseDelta_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "ONKeys",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "D365foSynapseStorageKey"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ONKeys')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/powerappdataverse')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "CommonDataServiceForApps",
+				"typeProperties": {
+					"deploymentType": "Online",
+					"serviceUri": "https://org1d92e709.crm4.dynamics.com/",
+					"authenticationType": "AADServicePrincipal",
+					"servicePrincipalId": "[parameters('powerappdataverse_properties_typeProperties_servicePrincipalId')]",
+					"servicePrincipalCredential": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "ONKeys",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "AppRegistrationClientSecret"
+					},
+					"servicePrincipalCredentialType": "ServicePrincipalKey"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ONKeys')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/storageaccount')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "ONKeys",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "[parameters('storageaccount_properties_typeProperties_connectionString_secretName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ONKeys')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/InterfaceApplication')]",
+			"type": "Microsoft.DataFactory/factories/credentials",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "ServicePrincipal",
+				"typeProperties": {
+					"tenant": "fcc89525-2fcb-4f0f-af11-57eb85e11fe4",
+					"servicePrincipalId": "362a81c8-7bbc-4ad5-b505-db6723d62b4e",
+					"servicePrincipalKey": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "ONKeys",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "AppRegistrationClientSecret"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ONKeys')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/1ME10030553')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "storageaccount",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "OL/Sample Data"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "1ME10030553.csv",
+						"folderPath": "OL",
+						"container": "whsstockreplenish"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "dataareaid",
+						"type": "String"
+					},
+					{
+						"name": "itemid",
+						"type": "String"
+					},
+					{
+						"name": "salesqty",
+						"type": "String"
+					},
+					{
+						"name": "inventdimid",
+						"type": "String"
+					},
+					{
+						"name": "startdate",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/storageaccount')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/BarcodeONUKONUS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "storageaccount",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "OL/Sample Data"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "BarcodeONUKONUS.csv",
+						"folderPath": "OL",
+						"container": "whsstockreplenish"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "inventdimid",
+						"type": "String"
+					},
+					{
+						"name": "itembarcode",
+						"type": "String"
+					},
+					{
+						"name": "itemid",
+						"type": "String"
+					},
+					{
+						"name": "dataareaid",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/storageaccount')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DataImportExecution')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "powerappdataverse",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "CommonDataServiceForAppsEntity",
+				"schema": [],
+				"typeProperties": {
+					"entityName": "crd3c_dataimportexecution"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/powerappdataverse')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DataversePurchaseOrderLines')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "powerappdataverse",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "CommonDataServiceForAppsEntity",
+				"schema": [],
+				"typeProperties": {
+					"entityName": "hso_purchaseorderlines"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/powerappdataverse')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DataverseTransferOrder')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "powerappdataverse",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "CommonDataServiceForAppsEntity",
+				"schema": [],
+				"typeProperties": {
+					"entityName": "crd3c_transferorder"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/powerappdataverse')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/EcoResProductSample')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "storageaccount",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "OL/Sample Data"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "EcoResProduct_Sample.csv",
+						"folderPath": "OL",
+						"container": "whsstockreplenish"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "displayproductnumber",
+						"type": "String"
+					},
+					{
+						"name": "searchname",
+						"type": "String"
+					},
+					{
+						"name": "recid",
+						"type": "String"
+					},
+					{
+						"name": "partition",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/storageaccount')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ForecastSales')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "powerappdataverse",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "OL/General"
+				},
+				"annotations": [],
+				"type": "CommonDataServiceForAppsEntity",
+				"schema": [],
+				"typeProperties": {
+					"entityName": "hso_recommendedorderqty_virtualwebstore"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/powerappdataverse')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ForecastSalesONUKONUS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "storageaccount",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "OL/Sample Data"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "ForecastSalesONUKONUS.csv",
+						"folderPath": "OL",
+						"container": "whsstockreplenish"
+					},
+					"columnDelimiter": ",",
+					"rowDelimiter": "\n",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "dataareaid",
+						"type": "String"
+					},
+					{
+						"name": "itemid",
+						"type": "String"
+					},
+					{
+						"name": "salesqty",
+						"type": "String"
+					},
+					{
+						"name": "inventdimid",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/storageaccount')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ForecastSalesSample')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "storageaccount",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "OL/Sample Data"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "ForecastSalesSample.csv",
+						"folderPath": "OL",
+						"container": "whsstockreplenish"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "itemid",
+						"type": "String"
+					},
+					{
+						"name": "startdate",
+						"type": "String"
+					},
+					{
+						"name": "inventdimid",
+						"type": "String"
+					},
+					{
+						"name": "salesqty",
+						"type": "String"
+					},
+					{
+						"name": "dataareaid",
+						"type": "String"
+					},
+					{
+						"name": "suntafforecastchannelid",
+						"type": "String"
+					},
+					{
+						"name": "modelid",
+						"type": "String"
+					},
+					{
+						"name": "custgroupid",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/storageaccount')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/InventItemGroupSample')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "storageaccount",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "OL/Sample Data"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "InventItemGroupSample.csv",
+						"folderPath": "OL",
+						"container": "whsstockreplenish"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "itemid",
+						"type": "String"
+					},
+					{
+						"name": "itemgroupid",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/storageaccount')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/InventdimONUKONUS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "storageaccount",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "OL/Sample Data"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "InventdimONUKONUS.csv",
+						"folderPath": "OL",
+						"container": "whsstockreplenish"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "inventdimid",
+						"type": "String"
+					},
+					{
+						"name": "inventlocationid",
+						"type": "String"
+					},
+					{
+						"name": "inventsizeid",
+						"type": "String"
+					},
+					{
+						"name": "dataareaid",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/storageaccount')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Inventory')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "storageaccount",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "JL/MinimumStockTask"
+				},
+				"annotations": [],
+				"type": "Excel",
+				"typeProperties": {
+					"sheetName": "Sheet1",
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Inventory.xlsx",
+						"folderPath": "JL/MinimumStockTask",
+						"container": "whsstockreplenish"
+					},
+					"firstRowAsHeader": true
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/storageaccount')]"
+			]
+		}
+	]
+}

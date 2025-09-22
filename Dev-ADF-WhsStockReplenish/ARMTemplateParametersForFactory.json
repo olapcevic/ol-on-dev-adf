@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "Dev-ADF-WhsStockReplenish"
+		},
+		"AzureFunction_functionKey": {
+			"value": ""
+		},
+		"AzureFunction_properties_typeProperties_functionAppUrl": {
+			"value": "https://dev-replappgeneralhelper.azurewebsites.net"
+		},
+		"D365FODataLake_properties_typeProperties_url": {
+			"value": "https://onuatdatalakesps.dfs.core.windows.net/"
+		},
+		"D365FOSynapseDelta_properties_typeProperties_url": {
+			"value": "https://ontestsynapsestorage.dfs.core.windows.net/"
+		},
+		"ONKeys_properties_typeProperties_baseUrl": {
+			"value": "https://ON-Keys-DEV.vault.azure.net/"
+		},
+		"powerappdataverse_properties_typeProperties_servicePrincipalId": {
+			"value": "614b099c-972d-418d-b1de-5a3b1e582328"
+		},
+		"storageaccount_properties_typeProperties_connectionString_secretName": {
+			"value": "Repl-inv-app-storage-connectionstring"
+		}
+	}
+}

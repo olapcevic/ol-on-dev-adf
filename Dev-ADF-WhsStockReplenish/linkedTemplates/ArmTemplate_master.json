@@ -1,0 +1,211 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "Dev-ADF-WhsStockReplenish"
+		},
+		"AzureFunction_functionKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'functionKey' of 'AzureFunction'"
+		},
+		"AzureFunction_properties_typeProperties_functionAppUrl": {
+			"type": "string",
+			"defaultValue": "https://dev-replappgeneralhelper.azurewebsites.net"
+		},
+		"D365FODataLake_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://onuatdatalakesps.dfs.core.windows.net/"
+		},
+		"D365FOSynapseDelta_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://ontestsynapsestorage.dfs.core.windows.net/"
+		},
+		"ONKeys_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://ON-Keys-DEV.vault.azure.net/"
+		},
+		"powerappdataverse_properties_typeProperties_servicePrincipalId": {
+			"type": "string",
+			"defaultValue": "614b099c-972d-418d-b1de-5a3b1e582328"
+		},
+		"storageaccount_properties_typeProperties_connectionString_secretName": {
+			"type": "string",
+			"defaultValue": "Repl-inv-app-storage-connectionstring"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "Dev-ADF-WhsStockReplenish_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"AzureFunction_functionKey": {
+						"value": "[parameters('AzureFunction_functionKey')]"
+					},
+					"AzureFunction_properties_typeProperties_functionAppUrl": {
+						"value": "[parameters('AzureFunction_properties_typeProperties_functionAppUrl')]"
+					},
+					"ONKeys_properties_typeProperties_baseUrl": {
+						"value": "[parameters('ONKeys_properties_typeProperties_baseUrl')]"
+					},
+					"D365FODataLake_properties_typeProperties_url": {
+						"value": "[parameters('D365FODataLake_properties_typeProperties_url')]"
+					},
+					"D365FOSynapseDelta_properties_typeProperties_url": {
+						"value": "[parameters('D365FOSynapseDelta_properties_typeProperties_url')]"
+					},
+					"powerappdataverse_properties_typeProperties_servicePrincipalId": {
+						"value": "[parameters('powerappdataverse_properties_typeProperties_servicePrincipalId')]"
+					},
+					"storageaccount_properties_typeProperties_connectionString_secretName": {
+						"value": "[parameters('storageaccount_properties_typeProperties_connectionString_secretName')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "Dev-ADF-WhsStockReplenish_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'Dev-ADF-WhsStockReplenish_ArmTemplate_0')]"
+			]
+		},
+		{
+			"name": "Dev-ADF-WhsStockReplenish_ArmTemplate_2",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_2.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'Dev-ADF-WhsStockReplenish_ArmTemplate_1')]"
+			]
+		},
+		{
+			"name": "Dev-ADF-WhsStockReplenish_ArmTemplate_3",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_3.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'Dev-ADF-WhsStockReplenish_ArmTemplate_2')]"
+			]
+		},
+		{
+			"name": "Dev-ADF-WhsStockReplenish_ArmTemplate_4",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_4.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'Dev-ADF-WhsStockReplenish_ArmTemplate_3')]"
+			]
+		},
+		{
+			"name": "Dev-ADF-WhsStockReplenish_ArmTemplate_5",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_5.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'Dev-ADF-WhsStockReplenish_ArmTemplate_4')]"
+			]
+		},
+		{
+			"name": "Dev-ADF-WhsStockReplenish_ArmTemplate_6",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_6.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'Dev-ADF-WhsStockReplenish_ArmTemplate_5')]"
+			]
+		}
+	]
+}

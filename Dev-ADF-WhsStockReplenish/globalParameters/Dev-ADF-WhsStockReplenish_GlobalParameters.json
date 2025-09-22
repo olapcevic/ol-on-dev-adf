@@ -1,0 +1,18 @@
+{
+	"FO_Datalake_Environment": {
+		"type": "string",
+		"value": "on-test.sandbox.operations.dynamics.com"
+	},
+	"Environment": {
+		"type": "string",
+		"value": "Development"
+	},
+	"SlackMessageLogicAppUrl": {
+		"type": "string",
+		"value": "https://prod-120.westeurope.logic.azure.com:443/workflows/65eb2991eeb4460fb6f440da0eea146e/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=-djqmO6HD-gckOL4tUGnA6deHpY5Nk847rTPkLplkxc"
+	},
+	"FO_Synapse_Container": {
+		"type": "string",
+		"value": "dataverse-ontest-unqccd0037834be4cec846b41a3ea290"
+	}
+}

@@ -1,0 +1,1480 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "Dev-ADF-WhsStockReplenish"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/POCreate_test')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "POCreate_test",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "CreatePurchaseOrderLines_v1_0_0",
+								"type": "DataFlowReference",
+								"parameters": {
+									"Company": "'ONUK'",
+									"Store": "'SOU-PF-STK'",
+									"Warehouse": "'LUX-KN-STK'",
+									"filename": "'SampleFileWithFTS'",
+									"TriggerSource": "'Manual'",
+									"Container": {
+										"value": "'@{pipeline().globalParameters.FO_Synapse_Container}'",
+										"type": "Expression"
+									},
+									"OrderType": "'Purchase Order'",
+									"isDualPurposeStore": "true()",
+									"isItemGroupingEnabled": "true()"
+								},
+								"datasetParameters": {
+									"Inventsum": {},
+									"EcoResProduct": {},
+									"EcoResProductTranslation": {},
+									"RecommendedOrderQty": {},
+									"DataImportExecutions": {},
+									"InventItemGroupItem": {},
+									"UOWarehouse": {},
+									"DataExecutionsTO": {},
+									"PurchaseOrdersSink": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "OL"
+				},
+				"annotations": [],
+				"lastPublishTime": "2025-09-17T12:13:39Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ResetMSL')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "ResetMSL",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "Reset MSL when no forecast",
+								"type": "DataFlowReference",
+								"parameters": {
+									"companyFetchXML": "'<value>onuk</value>'",
+									"CompanyList": "[['onuk']",
+									"StoreList": "[['SOU-PF-STK']",
+									"storeFetchXML": "'<value>SOU-PF-STK</value>'"
+								},
+								"datasetParameters": {
+									"RecommendedOrderQty": {},
+									"RecommendedOrderQtyResetMSL": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "OL/MSL - Forecast"
+				},
+				"annotations": [],
+				"lastPublishTime": "2025-09-21T20:41:04Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/RevenuePerProduct')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "RevenuePerProduct",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "RevenuePerProduct",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"RevenuePerProduct": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "JL/New folder"
+				},
+				"annotations": [],
+				"lastPublishTime": "2025-09-18T14:40:19Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/RevenuePerProductTest')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "RevenuePerProductTest",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "RevenuePerProduct1",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"RevenuePerProduct1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "JL/New folder"
+				},
+				"annotations": [],
+				"lastPublishTime": "2025-09-18T14:40:19Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Sync MSL to Forecast Sales')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Create msl based on forecast",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "ResetMSL",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "Sync MSL based on forecast sales",
+								"type": "DataFlowReference",
+								"parameters": {
+									"Container": {
+										"value": "'@{pipeline().globalParameters.FO_Synapse_Container}'",
+										"type": "Expression"
+									},
+									"CompanyList": {
+										"value": "@variables('CompanyList')",
+										"type": "Expression"
+									},
+									"companyFetchXML": {
+										"value": "'@{variables('companyFetchXML')}'",
+										"type": "Expression"
+									},
+									"storeList": {
+										"value": "@variables('StoreList')",
+										"type": "Expression"
+									},
+									"storeFetchXML": {
+										"value": "'@{variables('storeFetchXML')}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"UOItem": {},
+									"InventDim": {},
+									"ForecastSales": {},
+									"UOWarehouses": {},
+									"MSLcreateCSV": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "LookupDualPurposeCompanies",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "CommonDataServiceForAppsSource",
+								"query": {
+									"value": "<fetch version=\"1.0\"\n       mapping=\"logical\"\n       distinct=\"true\"\n       savedqueryid=\"41c7362d-ac5a-ed11-9562-000d3aba35c5\"\n       no-lock=\"false\">\n\t<entity name=\"crd3c_uowarehouses\">\n\t\t<attribute name=\"statecode\"/>\n\t\t<attribute name=\"crd3c_uowarehousesid\"/>\n\t\t<attribute name=\"crd3c_name\"/>\n\t\t<attribute name=\"crd3c_dataarea\"/>\n\t\t<filter type=\"and\">\n\t\t\t<condition attribute=\"statecode\"\n\t\t\t           operator=\"eq\"\n\t\t\t           value=\"0\"/>\n\t\t\t<condition attribute=\"hso_dualpurpose\"\n\t\t\t           operator=\"eq\"\n\t\t\t           value=\"1\"/>\n\t\t\t<condition attribute=\"crd3c_warehousetype\"\n\t\t\t           operator=\"eq\"\n\t\t\t           value=\"STOCK\"/>\n\t\t\t<condition attribute=\"hso_ordertypesplit\"\n\t\t\t           operator=\"eq\"\n\t\t\t           value=\"1\"/>\n\t\t</filter>\n\t</entity>\n</fetch>",
+									"type": "Expression"
+								}
+							},
+							"dataset": {
+								"referenceName": "UOWarehouses",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "DualPurposeCompanies",
+						"description": "Iterate all dual purpose companies",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "LookupDualPurposeCompanies",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('LookupDualPurposeCompanies').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Check for duplicates",
+									"type": "IfCondition",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"expression": {
+											"value": "@not(contains(variables('CompanyList'), item().crd3c_dataarea))\n",
+											"type": "Expression"
+										},
+										"ifTrueActivities": [
+											{
+												"name": "AddCompany",
+												"type": "AppendVariable",
+												"dependsOn": [],
+												"userProperties": [],
+												"typeProperties": {
+													"variableName": "CompanyList",
+													"value": {
+														"value": "@item().crd3c_dataarea",
+														"type": "Expression"
+													}
+												}
+											},
+											{
+												"name": "AddStore",
+												"type": "AppendVariable",
+												"dependsOn": [],
+												"userProperties": [],
+												"typeProperties": {
+													"variableName": "StoreList",
+													"value": {
+														"value": "@item().crd3c_name",
+														"type": "Expression"
+													}
+												}
+											}
+										]
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "companyFetchXML",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "DualPurposeCompanies",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "companyFetchXML",
+							"value": {
+								"value": "@concat('<value>', join(variables('CompanyList'), '</value><value>'), '</value>')\n",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "ResetMSL",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "companyFetchXML",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "storeFetchXML",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "Reset MSL when no forecast",
+								"type": "DataFlowReference",
+								"parameters": {
+									"companyFetchXML": {
+										"value": "'@{variables('companyFetchXML')}'",
+										"type": "Expression"
+									},
+									"CompanyList": {
+										"value": "@variables('CompanyList')",
+										"type": "Expression"
+									},
+									"StoreList": {
+										"value": "@variables('StoreList')",
+										"type": "Expression"
+									},
+									"storeFetchXML": {
+										"value": "'@{variables('storeFetchXML')}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"RecommendedOrderQty": {},
+									"RecommendedOrderQtyResetMSL": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "storeFetchXML",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "DualPurposeCompanies",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "storeFetchXML",
+							"value": {
+								"value": "@concat('<value>', join(variables('StoreList'), '</value><value>'), '</value>')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "CopyMSLToDataverse",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Create msl based on forecast",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"wildcardFileName": "RecOrderQtyVS.csv",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "CommonDataServiceForAppsSink",
+								"writeBatchSize": 999,
+								"writeBehavior": "upsert",
+								"ignoreNullValues": false,
+								"alternateKeyName": "crd3c_key",
+								"bypassPowerAutomateFlows": false
+							},
+							"enableStaging": false,
+							"parallelCopies": 30,
+							"enableSkipIncompatibleRow": true,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "RecomOrderQtyCsvFile_virtualStore",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "RecommendedOrderQty",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"variables": {
+					"CompanyList": {
+						"type": "Array"
+					},
+					"companiesString": {
+						"type": "String"
+					},
+					"companyFetchXML": {
+						"type": "String"
+					},
+					"StoreList": {
+						"type": "Array"
+					},
+					"storeFetchXML": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2025-09-21T20:41:04Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Sync Vendors IC 4 Way')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Sync Vendors IC 4 Way",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "SyncVendors_CustWH_SourcingWH_Test",
+								"type": "DataFlowReference",
+								"parameters": {
+									"Container": {
+										"value": "'@{pipeline().globalParameters.FO_Synapse_Container}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"InterCompanyTradingPartner": {},
+									"Party": {},
+									"InterCompanyTradingRelationVendor": {},
+									"myTempFile": {},
+									"CustTableTmp": {},
+									"Vendors": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"Container": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "OL/General"
+				},
+				"annotations": [],
+				"lastPublishTime": "2025-09-05T14:54:29Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Sync Vendors')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Delete Vendors",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DeleteVendors",
+								"type": "DataFlowReference",
+								"parameters": {
+									"Container": {
+										"value": "'@{pipeline().globalParameters.FO_Synapse_Container}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"VendTable": {},
+									"Vendors": {},
+									"DeleteVendors": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Sync Vendors",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Delete Vendors",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "SyncVendors",
+								"type": "DataFlowReference",
+								"parameters": {
+									"Container": {
+										"value": "'@{pipeline().globalParameters.FO_Synapse_Container}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"Vendors": {},
+									"UOWarehouses": {},
+									"InterCompanyTradingRelationCustomer": {},
+									"Customers": {},
+									"InterCompanyTradingPartner": {},
+									"Party": {},
+									"InterCompanyTradingRelationVendor": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Sync Vendors_SourcingWH",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Sync Vendors",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "SyncVendors_SourcingWH",
+								"type": "DataFlowReference",
+								"parameters": {
+									"Container": {
+										"value": "'@{pipeline().globalParameters.FO_Synapse_Container}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"Vendors": {},
+									"UOWarehouses": {},
+									"InterCompanyTradingRelationCustomer": {},
+									"Customers": {},
+									"InterCompanyTradingPartner": {},
+									"Party": {},
+									"InterCompanyTradingRelationVendor": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"variables": {
+					"Error": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2025-09-12T11:42:11Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Sync Warehouses')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Sync Warehouses",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "SyncOUWarehouse",
+								"type": "DataFlowReference",
+								"parameters": {
+									"Container": {
+										"value": "'@{pipeline().parameters.Container}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"InventLocation": {},
+									"SinkOUWarehouse": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"Container": {
+						"type": "string"
+					}
+				},
+				"variables": {
+					"Error": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-12-19T11:19:07Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Virtual store qtys')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Virtual store qtys",
+				"activities": [
+					{
+						"name": "CreateRecQty_VS",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "CreateRecOrderQtyCsv_VirtualStores_v1",
+								"type": "DataFlowReference",
+								"parameters": {
+									"Container": "'dataverse-ontest-unqccd0037834be4cec846b41a3ea290'"
+								},
+								"datasetParameters": {
+									"ForecastSalesONUKONUS": {},
+									"BarcodeONUKONUS": {},
+									"InventdimONUKONUS": {},
+									"ItemONUKONUS": {},
+									"WHONUKONUS": {},
+									"createCsv": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "OL/General"
+				},
+				"annotations": [],
+				"lastPublishTime": "2025-09-05T14:54:29Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/WHONUKONUS')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "WarehouseONUKONUS",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "WarehouseONUKONUS",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"WHONUKONUS": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "OL/Sample"
+				},
+				"annotations": [],
+				"lastPublishTime": "2025-09-06T12:03:00Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/isDualPurpose')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "If Condition1",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "isDualPurpose",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@variables('isDualPurpose')",
+								"type": "Expression"
+							},
+							"ifFalseActivities": [
+								{
+									"name": "Wait for false",
+									"type": "Wait",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"waitTimeInSeconds": 1
+									}
+								}
+							],
+							"ifTrueActivities": [
+								{
+									"name": "Wait for true",
+									"type": "Wait",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"waitTimeInSeconds": 1
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "isDualPurpose",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "isDualPurpose",
+							"value": {
+								"value": "@pipeline().parameters.isDualPurpose",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Data flow2",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "If Condition1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "BooleanValueTest",
+								"type": "DataFlowReference",
+								"parameters": {
+									"isDualPurpose": {
+										"value": "@variables('isDualPurpose')",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"WH": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"isDualPurpose": {
+						"type": "bool"
+					}
+				},
+				"variables": {
+					"isDualPurpose": {
+						"type": "Boolean",
+						"defaultValue": true
+					}
+				},
+				"folder": {
+					"name": "OL/General"
+				},
+				"annotations": [],
+				"lastPublishTime": "2025-09-07T15:10:53Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/test011111')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "dummyfile",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dummyorders",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"dummyorders": {},
+									"dummycompany": {},
+									"testOrders": {},
+									"sink1": {},
+									"sink2": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "JL/New folder"
+				},
+				"annotations": [],
+				"lastPublishTime": "2025-09-18T14:40:19Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Sync Items')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Create UOItems csv",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "CreateUOItemsCsv",
+								"type": "DataFlowReference",
+								"parameters": {
+									"Container": {
+										"value": "'@{pipeline().globalParameters.FO_Synapse_Container}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"ecoResProduct": {},
+									"EcoResProductVariantDimensionValue": {},
+									"EcoResSize": {},
+									"Translation": {},
+									"InventItemBarcode": {},
+									"LegalEntity": {},
+									"EcoResDistinctProduct": {},
+									"EcoResProductVariantSize": {},
+									"sinkUOItem": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Copy  Item csv to Dataverse",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Create UOItems csv",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Copy Items csv to Dataverse",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Create RecomOrderQty",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Copy  Item csv to Dataverse",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Sync Warehouses",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Create RecomOrderQty",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Sync Warehouses",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Sync Warehouses",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"Container": {
+									"value": "@pipeline().globalParameters.FO_Synapse_Container",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					{
+						"name": "Send Failure message",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Set Create RecomOrderQty Error",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set Sync Warehouses Error",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set Copy Item Error",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set UI items Error",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "POST",
+							"headers": {},
+							"url": {
+								"value": "@pipeline().globalParameters.SlackMessageLogicAppUrl",
+								"type": "Expression"
+							},
+							"body": {
+								"value": "{\n\"Channel\": \"stock-replenishment-app\",\n\"Message\": \" Inbound Data Run failed in @{pipeline().globalParameters.Environment} Environemnt \\nDataFactoryName: @{pipeline().DataFactory} \\nPipelineName: @{pipeline().Pipeline} \\nError: @{variables('Error')}\"\n}",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set UI items Error",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Create UOItems csv",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "Error",
+							"value": {
+								"value": "@activity('Create UOItems csv').error?.message",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set Copy Item Error",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Copy  Item csv to Dataverse",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "Error",
+							"value": {
+								"value": "@activity('Copy  Item csv to Dataverse').error?.message",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set Sync Warehouses Error",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Sync Warehouses",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "Error",
+							"value": {
+								"value": "@activity('Sync Warehouses').error?.message",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set Create RecomOrderQty Error",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Create RecomOrderQty",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "Error",
+							"value": {
+								"value": "@activity('Create RecomOrderQty').error?.message",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"variables": {
+					"Error": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-12-19T11:19:08Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/Sync Warehouses')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/once a day')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "Sync Items",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					},
+					{
+						"pipelineReference": {
+							"referenceName": "Sync Vendors",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2022-07-08T05:00:00",
+						"timeZone": "W. Europe Standard Time",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								1
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/Sync Items')]",
+				"[concat(variables('factoryId'), '/pipelines/Sync Vendors')]"
+			]
+		}
+	]
+}
