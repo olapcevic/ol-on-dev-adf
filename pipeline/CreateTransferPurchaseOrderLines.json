@@ -627,6 +627,10 @@
 									"orderType": {
 										"value": "@variables('OrderType')",
 										"type": "Expression"
+									},
+									"itemGroupingEnabled": {
+										"value": "@pipeline().parameters.ItemGroupingEnabled",
+										"type": "Expression"
 									}
 								},
 								"method": "POST"
