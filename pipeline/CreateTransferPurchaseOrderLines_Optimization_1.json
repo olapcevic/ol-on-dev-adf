@@ -37,23 +37,6 @@
 				}
 			},
 			{
-				"name": "Warehouse",
-				"type": "SetVariable",
-				"dependsOn": [],
-				"policy": {
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"variableName": "Warehouse",
-					"value": {
-						"value": "@toUpper(pipeline().parameters.Warehouse)",
-						"type": "Expression"
-					}
-				}
-			},
-			{
 				"name": "Set filename",
 				"type": "SetVariable",
 				"dependsOn": [],
@@ -132,64 +115,11 @@
 				}
 			},
 			{
-				"name": "OrderType",
-				"type": "SetVariable",
-				"dependsOn": [],
-				"policy": {
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"variableName": "OrderType",
-					"value": {
-						"value": "@toUpper(pipeline().parameters.OrderType)",
-						"type": "Expression"
-					}
-				}
-			},
-			{
 				"name": "If Condition_Check TO_PO",
 				"type": "IfCondition",
 				"dependsOn": [
 					{
-						"activity": "Company",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "Store",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "Warehouse",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
 						"activity": "Set filename",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "OrderType",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "MaxOrderQty",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "isDualPurposeStore",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -1076,23 +1006,6 @@
 				}
 			},
 			{
-				"name": "MaxOrderQty",
-				"type": "SetVariable",
-				"dependsOn": [],
-				"policy": {
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"variableName": "MaxOrderQty",
-					"value": {
-						"value": "@pipeline().parameters.MaxOrderQty",
-						"type": "Expression"
-					}
-				}
-			},
-			{
 				"name": "ItemGroupingEnabled",
 				"type": "SetVariable",
 				"dependsOn": [],
@@ -1110,50 +1023,57 @@
 				}
 			},
 			{
-				"name": "isDualPurposeStore",
-				"type": "SetVariable",
-				"dependsOn": [],
+				"name": "LookupStore",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "Store",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Company",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"variableName": "isDualPurposeStore",
-					"value": {
-						"value": "@pipeline().parameters.isDualPurposeStore",
-						"type": "Expression"
-					}
+					"source": {
+						"type": "CommonDataServiceForAppsSource",
+						"query": {
+							"value": "<fetch version=\"1.0\"\n       mapping=\"logical\"\n       distinct=\"true\"\n       savedqueryid=\"41c7362d-ac5a-ed11-9562-000d3aba35c5\"\n       no-lock=\"false\">\n\t<entity name=\"crd3c_uowarehouses\">\n\t\t<attribute name=\"statecode\"/>\n\t\t<attribute name=\"crd3c_uowarehousesid\"/>\n\t\t<attribute name=\"crd3c_name\"/>\n\t\t<attribute name=\"crd3c_dataarea\"/>\n\t\t<filter type=\"and\">\n\t\t\t<condition attribute=\"statecode\"\n\t\t\t           operator=\"eq\"\n\t\t\t           value=\"0\"/>\n\t\t\t<condition attribute=\"crd3c_name\"\n\t\t\t           operator=\"eq\"\n\t\t\t           value=@{variables('Store')}/>\n\t\t</filter>\n\t</entity>\n</fetch>",
+							"type": "Expression"
+						}
+					},
+					"dataset": {
+						"referenceName": "UOWarehouses",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
 				}
 			}
 		],
 		"parameters": {
 			"Company": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "'ONUK'"
 			},
 			"Store": {
-				"type": "string"
-			},
-			"Warehouse": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "'SOU-PF-STK'"
 			},
 			"TriggerSource": {
 				"type": "string"
-			},
-			"OrderType": {
-				"type": "string"
-			},
-			"MaxOrderQty": {
-				"type": "string",
-				"defaultValue": "0"
-			},
-			"ItemGroupingEnabled": {
-				"type": "bool",
-				"defaultValue": false
-			},
-			"isDualPurposeStore": {
-				"type": "bool",
-				"defaultValue": false
 			}
 		},
 		"variables": {
