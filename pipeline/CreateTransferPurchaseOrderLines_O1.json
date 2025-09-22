@@ -1,0 +1,1206 @@
+{
+	"name": "CreateTransferPurchaseOrderLines_O1",
+	"properties": {
+		"activities": [
+			{
+				"name": "Company",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "Company",
+					"value": {
+						"value": "@toUpper(pipeline().parameters.Company)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Store",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "Store",
+					"value": {
+						"value": "@toUpper(pipeline().parameters.Store)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Warehouse",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "Warehouse",
+					"value": {
+						"value": "@toUpper(pipeline().parameters.Warehouse)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set filename",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "Filename",
+					"value": {
+						"value": "@guid()",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Send Failure message",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Set Error Copy_TO",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set Error Copy_PO",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "POST",
+					"url": {
+						"value": "@pipeline().globalParameters.SlackMessageLogicAppUrl",
+						"type": "Expression"
+					},
+					"body": {
+						"value": "{\n\"Channel\": \"stock-replenishment-app\",\n\"Message\": \" Inbound Data Run failed in @{pipeline().globalParameters.Environment} Environemnt \\n```Company: @{variables('Company')} \\nStore: @{variables('Store')} \\nWarehouse: @{variables('Warehouse')}``` \\n\\nDataFactoryName: @{pipeline().DataFactory} \\nPipelineName: @{pipeline().Pipeline} \\nError: @{variables('Error')}\"\n}",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set Error Copy_TO",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "If Condition_Check TO_PO",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "Error",
+					"value": {
+						"value": "@activity('Copy data to Dataverse_TO').error?.message",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "OrderType",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "OrderType",
+					"value": {
+						"value": "@toUpper(pipeline().parameters.OrderType)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "If Condition_Check TO_PO",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Company",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Store",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Warehouse",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set filename",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "OrderType",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "MaxOrderQty",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "isDualPurposeStore",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "ItemGroupingEnabled",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(pipeline().parameters.OrderType, 'Transfer Order')",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "Copy data to Dataverse_PO",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "Azure Function_PO",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": false,
+										"wildcardFileName": "SampleFileWithFTS.csv",
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "CommonDataServiceForAppsSink",
+									"writeBatchSize": 100,
+									"writeBehavior": "upsert",
+									"ignoreNullValues": false,
+									"bypassPowerAutomateFlows": false
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"name": "hso_barcode",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "hso_barcode",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "hso_batchid",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "hso_batchid",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "hso_batchnumber",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "hso_batchnumber",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"name": "hso_createddate",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "hso_createddate",
+												"type": "DateTime"
+											}
+										},
+										{
+											"source": {
+												"name": "hso_dataarea",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "hso_dataarea",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "hso_fromwhsqty",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "hso_fromwhsqty",
+												"type": "Decimal"
+											}
+										},
+										{
+											"source": {
+												"name": "hso_fts",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "hso_fts",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"name": "hso_inboundorderqty",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "hso_inboundorderqty",
+												"type": "Decimal"
+											}
+										},
+										{
+											"source": {
+												"name": "hso_item",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "hso_item",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "hso_itemdescription",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "hso_itemdescription",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "hso_itemvariant",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "hso_itemvariant",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "hso_name",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "hso_name",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "hso_orderquantity",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "hso_orderquantity",
+												"type": "Decimal"
+											}
+										},
+										{
+											"source": {
+												"name": "hso_purchaseorderlinesid",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "hso_purchaseorderlinesid",
+												"type": "Guid"
+											}
+										},
+										{
+											"source": {
+												"name": "hso_site",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "hso_site",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "hso_size",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "hso_size",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "hso_sourceicwarehouse",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "hso_sourceicwarehouse",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "hso_store",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "hso_store",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "hso_storeminquantity",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "hso_storeminquantity",
+												"type": "Decimal"
+											}
+										},
+										{
+											"source": {
+												"name": "hso_storequantity",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "hso_storequantity",
+												"type": "Decimal"
+											}
+										}
+									],
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "TempCsvFilePO",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DataversePurchaseOrderLines",
+									"type": "DatasetReference"
+								}
+							]
+						},
+						{
+							"name": "Delete file_PO",
+							"type": "Delete",
+							"dependsOn": [
+								{
+									"activity": "Copy data to Dataverse_PO",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataset": {
+									"referenceName": "TempCsvFilePO",
+									"type": "DatasetReference"
+								},
+								"enableLogging": false,
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false,
+									"prefix": {
+										"value": "@{variables('Filename')}",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "CreatePurchaseOrderLines",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "1.00:00:00",
+								"retry": 3,
+								"retryIntervalInSeconds": 60,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "CreatePurchaseOrderLines_v1_0_0",
+									"type": "DataFlowReference",
+									"parameters": {
+										"Company": {
+											"value": "'@{variables('Company')}'",
+											"type": "Expression"
+										},
+										"Store": {
+											"value": "'@{variables('Store')}'",
+											"type": "Expression"
+										},
+										"Warehouse": {
+											"value": "'@{variables('Warehouse')}'",
+											"type": "Expression"
+										},
+										"filename": {
+											"value": "'@{variables('Filename')}'",
+											"type": "Expression"
+										},
+										"TriggerSource": {
+											"value": "'@{pipeline().parameters.TriggerSource}'",
+											"type": "Expression"
+										},
+										"Container": {
+											"value": "'@{pipeline().globalParameters.FO_Synapse_Container}'",
+											"type": "Expression"
+										},
+										"OrderType": {
+											"value": "'@{variables('OrderType')}'",
+											"type": "Expression"
+										},
+										"isDualPurposeStore": {
+											"value": "@variables('isDualPurposeStore')",
+											"type": "Expression"
+										},
+										"isItemGroupingEnabled": {
+											"value": "@variables('ItemGroupingEnabled')",
+											"type": "Expression"
+										}
+									}
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "None",
+								"runConcurrently": true,
+								"cacheSinks": {
+									"firstRowOnly": true
+								}
+							}
+						},
+						{
+							"name": "Azure Function_PO",
+							"type": "AzureFunctionActivity",
+							"dependsOn": [
+								{
+									"activity": "CreatePurchaseOrderLines",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"functionName": "PopulateBatchNumber",
+								"headers": {
+									"fileName": {
+										"value": "@variables('Filename')",
+										"type": "Expression"
+									},
+									"maxOrderQty": {
+										"value": "@variables('MaxOrderQty')",
+										"type": "Expression"
+									},
+									"orderType": {
+										"value": "@variables('OrderType')",
+										"type": "Expression"
+									},
+									"itemGroupingEnabled": {
+										"value": "@pipeline().parameters.ItemGroupingEnabled",
+										"type": "Expression"
+									}
+								},
+								"method": "POST"
+							},
+							"linkedServiceName": {
+								"referenceName": "AzureFunction",
+								"type": "LinkedServiceReference"
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "Copy data to Dataverse_TO",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "Azure Function_TO",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": false,
+										"wildcardFileName": {
+											"value": "@concat(variables('Filename'), '_Transformed.csv')",
+											"type": "Expression"
+										},
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "CommonDataServiceForAppsSink",
+									"writeBatchSize": 100,
+									"writeBehavior": "upsert",
+									"ignoreNullValues": false,
+									"bypassPowerAutomateFlows": false
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"name": "cr5b1_createddate",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "cr5b1_createddate",
+												"type": "DateTime"
+											}
+										},
+										{
+											"source": {
+												"name": "cr5b1_dataarea",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "cr5b1_dataarea",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "cr5b1_fromwhs",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "cr5b1_fromwhs",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "cr5b1_item",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "cr5b1_item",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "cr5b1_itemdescription",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "cr5b1_itemdescription",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "cr5b1_itemvariant",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "cr5b1_itemvariant",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "cr5b1_site",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "cr5b1_site",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "cr5b1_size",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "cr5b1_size",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "cr5b1_towhs",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "cr5b1_towhs",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "crd3c_batchid",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "crd3c_batchid",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "crd3c_fromwhsstockqty",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "crd3c_fromwhsstockqty",
+												"type": "Decimal"
+											}
+										},
+										{
+											"source": {
+												"name": "crd3c_inboundorderqty",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "crd3c_inboundorderqty",
+												"type": "Decimal"
+											}
+										},
+										{
+											"source": {
+												"name": "crd3c_name",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "crd3c_name",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "crd3c_storeavailqty",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "crd3c_storeavailqty",
+												"type": "Decimal"
+											}
+										},
+										{
+											"source": {
+												"name": "crd3c_storeminqty",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "crd3c_storeminqty",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"name": "crd3c_toqty",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "crd3c_toqty",
+												"type": "Decimal"
+											}
+										},
+										{
+											"source": {
+												"name": "crd3c_transferorderid",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "crd3c_transferorderid",
+												"type": "Guid"
+											}
+										},
+										{
+											"source": {
+												"name": "hso_barcode",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "hso_barcode",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "hso_batchnumber",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "hso_batchnumber",
+												"type": "Int32"
+											}
+										}
+									],
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "TempCsvFile",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DataverseTransferOrder",
+									"type": "DatasetReference"
+								}
+							]
+						},
+						{
+							"name": "Delete file_TO",
+							"type": "Delete",
+							"dependsOn": [
+								{
+									"activity": "Copy data to Dataverse_TO",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataset": {
+									"referenceName": "TempCsvFile",
+									"type": "DatasetReference"
+								},
+								"enableLogging": false,
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false,
+									"prefix": {
+										"value": "@{variables('Filename')}",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "CreateTransferOrderLines",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "1.00:00:00",
+								"retry": 3,
+								"retryIntervalInSeconds": 60,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "CreateTransferOrderLines",
+									"type": "DataFlowReference",
+									"parameters": {
+										"Company": {
+											"value": "'@{variables('Company')}'",
+											"type": "Expression"
+										},
+										"Store": {
+											"value": "'@{variables('Store')}'",
+											"type": "Expression"
+										},
+										"Warehouse": {
+											"value": "'@{variables('Warehouse')}'",
+											"type": "Expression"
+										},
+										"filename": {
+											"value": "'@{variables('Filename')}'",
+											"type": "Expression"
+										},
+										"TriggerSource": {
+											"value": "'@{pipeline().parameters.TriggerSource}'",
+											"type": "Expression"
+										},
+										"Container": {
+											"value": "'@{pipeline().globalParameters.FO_Synapse_Container}'",
+											"type": "Expression"
+										},
+										"OrderType": {
+											"value": "'@{variables('OrderType')}'",
+											"type": "Expression"
+										}
+									}
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "None",
+								"runConcurrently": true,
+								"cacheSinks": {
+									"firstRowOnly": true
+								}
+							}
+						},
+						{
+							"name": "Azure Function_TO",
+							"type": "AzureFunctionActivity",
+							"dependsOn": [
+								{
+									"activity": "CreateTransferOrderLines",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"functionName": "PopulateBatchNumber",
+								"headers": {
+									"fileName": {
+										"value": "@variables('Filename')",
+										"type": "Expression"
+									},
+									"maxOrderQty": {
+										"value": "@variables('MaxOrderQty')",
+										"type": "Expression"
+									},
+									"orderType": {
+										"value": "@variables('OrderType')",
+										"type": "Expression"
+									},
+									"itemGroupingEnabled": {
+										"value": "@pipeline().parameters.ItemGroupingEnabled",
+										"type": "Expression"
+									}
+								},
+								"method": "POST"
+							},
+							"linkedServiceName": {
+								"referenceName": "AzureFunction",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "Set Error Copy_PO",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "If Condition_Check TO_PO",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "Error",
+					"value": {
+						"value": "@activity('Copy data to Dataverse_PO').error?.message",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "MaxOrderQty",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "MaxOrderQty",
+					"value": {
+						"value": "@pipeline().parameters.MaxOrderQty",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "ItemGroupingEnabled",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "ItemGroupingEnabled",
+					"value": {
+						"value": "@pipeline().parameters.ItemGroupingEnabled",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "isDualPurposeStore",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "isDualPurposeStore",
+					"value": {
+						"value": "@pipeline().parameters.isDualPurposeStore",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"Company": {
+				"type": "string"
+			},
+			"Store": {
+				"type": "string"
+			},
+			"Warehouse": {
+				"type": "string"
+			},
+			"TriggerSource": {
+				"type": "string"
+			},
+			"OrderType": {
+				"type": "string"
+			},
+			"MaxOrderQty": {
+				"type": "string",
+				"defaultValue": "0"
+			},
+			"ItemGroupingEnabled": {
+				"type": "bool",
+				"defaultValue": false
+			},
+			"isDualPurposeStore": {
+				"type": "bool",
+				"defaultValue": false
+			}
+		},
+		"variables": {
+			"Filename": {
+				"type": "String",
+				"defaultValue": "guid()"
+			},
+			"Company": {
+				"type": "String"
+			},
+			"Store": {
+				"type": "String"
+			},
+			"Warehouse": {
+				"type": "String"
+			},
+			"Error": {
+				"type": "String"
+			},
+			"OrderType": {
+				"type": "String"
+			},
+			"MaxOrderQty": {
+				"type": "String"
+			},
+			"ItemGroupingEnabled": {
+				"type": "Boolean"
+			},
+			"isDualPurposeStore": {
+				"type": "Boolean"
+			}
+		},
+		"folder": {
+			"name": "OL/CreateTOPO_Optimization"
+		},
+		"annotations": [],
+		"lastPublishTime": "2025-09-20T07:42:55Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
